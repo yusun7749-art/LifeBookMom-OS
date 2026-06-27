@@ -2,3 +2,8 @@ export * from "./navigatorEngine";
 export * from "./journeyEngine";
 export * from "./contentAssetEngine";
 export * from "./revenueEngine";
+export * from "./memoryEngine";
+export * from "./decisionEngine";
+export * from "./recommendationEngine";
+export * from "./learningEngine";
+export * from "./insightEngine";
