@@ -1,7 +1,7 @@
 "use client";
 
 import type { Project } from "../data/projects";
-import { brandImageRules } from "../data/brandRules";
+import { lifebookmomBrandRules } from "../data/lifebookmomBrandRules";
 
 const coupangId = "AF1467107";
 
