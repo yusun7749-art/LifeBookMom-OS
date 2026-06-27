@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const menus = [
   ["/dashboard", "🏠 운영본부"],
+  ["/navigator", "🧭 항해사 전략실"],
   ["/brand-system", "🌿 작성 엔진"],
   ["/projects", "📂 프로젝트 자산"],
   ["/content", "📝 콘텐츠 제작"],
