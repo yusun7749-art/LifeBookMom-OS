@@ -8,6 +8,7 @@ import {
   enterpriseVision,
   osRuntime,
 } from "../../data/v4/osEnterprise";
+import OSCorePanel from "./OSCorePanel";
 
 function StatusBadge({ value }: { value: string }) {
   return (
@@ -32,7 +33,7 @@ export default function EnterpriseDashboard() {
       <section className="overflow-hidden rounded-[2.25rem] bg-[#1F1A16] text-white shadow-xl">
         <div className="grid gap-8 p-9 xl:grid-cols-[1.25fr_0.75fr]">
           <div>
-            <p className="text-sm font-bold text-[#D9CBB7]">Project021 · OS Runtime</p>
+            <p className="text-sm font-bold text-[#D9CBB7]">Project022 · OS Core Connected</p>
             <h1 className="mt-4 text-6xl font-black leading-tight">{enterpriseVision.title}</h1>
             <p className="mt-4 text-2xl font-extrabold text-[#F7F1E8]">{enterpriseVision.subtitle}</p>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-[#D9CBB7]">{enterpriseVision.promise}</p>
@@ -44,21 +45,33 @@ export default function EnterpriseDashboard() {
 
           <div className="rounded-[2rem] bg-[#DFF1E7] p-6 text-[#1F1A16]">
             <p className="text-sm font-black">현재 기준점</p>
-            <h2 className="mt-3 text-3xl font-black">{osRuntime.currentProject}</h2>
+            <h2 className="mt-3 text-3xl font-black">Project022-02 OS Core Integration</h2>
             <div className="mt-5 space-y-3 text-sm font-bold">
               <p>Branch: {osRuntime.branch}</p>
               <p>Baseline: {osRuntime.baseline}</p>
               <p>{osRuntime.rule}</p>
             </div>
-            <Link
-              href="/content-studio"
-              className="mt-6 inline-block rounded-2xl bg-[#1F1A16] px-6 py-4 font-black text-white"
-            >
-              📝 Content Studio V4 열기
-            </Link>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/content-studio"
+                className="inline-block rounded-2xl bg-[#1F1A16] px-5 py-4 font-black text-white"
+              >
+                📝 Content Studio V4
+              </Link>
+              <Link
+                href="/os-core"
+                className="inline-block rounded-2xl bg-white px-5 py-4 font-black text-[#1F1A16]"
+              >
+                🧬 OS Core
+              </Link>
+            </div>
           </div>
         </div>
       </section>
+
+      <div className="mt-8">
+        <OSCorePanel />
+      </div>
 
       <section className="mt-8 rounded-[2rem] border border-[#E4D5BE] bg-white p-7">
         <div className="flex flex-wrap items-center justify-between gap-4">
