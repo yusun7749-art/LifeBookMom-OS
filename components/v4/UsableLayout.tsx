@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { erpMeta, menu } from "../../data/v4/usableERP";
+import { irinaLink } from "../../data/v4/irinaLink";
 
 export function Shell({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
@@ -11,8 +12,23 @@ export function Shell({ title, desc, children }: { title: string; desc: string; 
             <h1 className="mt-1 text-3xl font-black">{title}</h1>
             <p className="mt-1 text-sm font-bold text-[#F7F1E8]">{desc}</p>
           </div>
-          <Link href="/enterprise" className="rounded-xl bg-[#DFF1E7] px-3 py-2 text-xs font-black text-[#1F1A16]">처음 화면</Link>
+
+          <div className="flex flex-wrap gap-2">
+            <Link href="/enterprise" className="rounded-xl bg-[#DFF1E7] px-3 py-2 text-xs font-black text-[#1F1A16]">
+              처음 화면
+            </Link>
+            <a
+              href={irinaLink.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]"
+              title={irinaLink.description}
+            >
+              이리나 연결
+            </a>
+          </div>
         </div>
+
         <div className="mt-3 flex flex-wrap gap-2">
           {menu.map((m) => (
             <Link key={m.href} href={m.href} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-[#1F1A16]">
