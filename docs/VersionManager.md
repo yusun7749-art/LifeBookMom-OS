@@ -3,11 +3,30 @@
 Status: ACTIVE
 
 ## Current Version
-OS v2.0.0
+OS v2.1.0
 
 ---
 
 ## Version History
+
+### OS v2.1.0
+Date: 2026-06-28
+Branch: project021-stabilize
+Baseline: d11456b Project020 Baseline
+
+Changes
+- OS_MANIFEST를 GitHub 기준 운영 문서로 강화
+- ProjectState 문서 추가
+- Project021 브랜치 기준 작업 시작
+- DecisionLog에 Project021 Branch 운영 결정 추가
+
+Reason
+ZIP/VS Code 중심 작업 반복을 막고 GitHub 기준 운영을 고정하기 위함.
+
+Approved
+대표 승인
+
+---
 
 ### OS v2.0.0
 Date: 2026-06-28
@@ -24,19 +43,3 @@ Reason
 
 Approved
 대표 승인
-
----
-
-## Version Rule
-
-모든 기능 변경은 아래 순서를 따른다.
-
-1. DecisionLog 기록
-2. Version 증가
-3. 코드 수정
-4. 테스트
-5. Git Commit
-6. 화면 확인
-7. DONE
-
-버전은 삭제하지 않으며 이전 버전은 보존한다.
