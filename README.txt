@@ -1,0 +1,1 @@
+적용 방법:\n1. data/constitutionRevisionSystem.ts -> C:\\LifeBookMom-OS\\data\\constitutionRevisionSystem.ts\n2. app/constitution-revision/page.tsx -> C:\\LifeBookMom-OS\\app\\constitution-revision\\page.tsx\n3. 확인: http://localhost:3000/constitution-revision\n\n원칙:\n- 기존 헌법 삭제 금지\n- 변경은 Revision으로 추가\n- 실제 실행은 Active Rule 기준\n
