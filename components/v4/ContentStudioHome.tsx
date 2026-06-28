@@ -20,27 +20,27 @@ export default function ContentStudioHome() {
   const currentRules = useMemo(() => getModeRules(mode), [mode]);
   const prompt = useMemo(() => buildIrinaPrompt(topic, mode), [topic, mode]);
 
-  const copyPrompt = async () => {
+  const copyAndOpen = async () => {
     await navigator.clipboard.writeText(prompt);
-    alert("이리나 글쓰기 기준이 복사되었습니다. ChatGPT 이리나 방에 붙여넣으면 됩니다.");
+    window.open("https://chatgpt.com/", "_blank", "noopener,noreferrer");
   };
 
   return (
-    <Shell title="글쓰기" desc="네이버 작성 / Google 작성을 누르면 이리나 규칙에 맞춘 작업 화면으로 넘어옵니다.">
+    <Shell title="글쓰기" desc="작성 버튼은 글쓰기 명령을 복사하고 이리나를 엽니다. 열린 창에서 Ctrl+V만 누르면 됩니다.">
       <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-black">{getModeLabel(mode)}</h2>
             <p className="mt-1 text-xs font-bold text-[#6F6255]">
-              선택된 주제와 작성 모드에 맞춰 변경 불가 규칙을 자동 적용합니다.
+              주제와 규칙이 자동으로 들어간 이리나 글쓰기 명령입니다.
             </p>
           </div>
           <button
             type="button"
-            onClick={copyPrompt}
+            onClick={copyAndOpen}
             className="rounded-xl bg-[#1F1A16] px-4 py-3 text-xs font-black text-white"
           >
-            이리나에게 보낼 문구 복사
+            복사하고 이리나 열기
           </button>
         </div>
 
@@ -54,27 +54,9 @@ export default function ContentStudioHome() {
             />
 
             <div className="mt-3 flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => setMode("naver")}
-                className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "naver" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}
-              >
-                네이버 작성
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("google")}
-                className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "google" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}
-              >
-                Google 작성
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode("image")}
-                className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "image" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}
-              >
-                이미지 제작
-              </button>
+              <button type="button" onClick={() => setMode("naver")} className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "naver" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}>네이버 작성</button>
+              <button type="button" onClick={() => setMode("google")} className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "google" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}>Google 작성</button>
+              <button type="button" onClick={() => setMode("image")} className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "image" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}>이미지 제작</button>
             </div>
           </div>
 
@@ -110,7 +92,7 @@ export default function ContentStudioHome() {
       </div>
 
       <div className="mt-4">
-        <Box title="이리나에게 보낼 문구">
+        <Box title="이리나에게 자동으로 복사될 문구">
           <textarea
             value={prompt}
             readOnly

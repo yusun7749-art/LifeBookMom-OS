@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { erpMeta, menu } from "../../data/v4/usableERP";
 import { irinaLink } from "../../data/v4/irinaLink";
+import { buildIrinaPrompt } from "../../data/v4/irinaWritingRules";
 
 export function Shell({ title, desc, children }: { title: string; desc: string; children: React.ReactNode }) {
   return (
@@ -63,12 +66,23 @@ export function SmallCard({ title, value, desc, href }: { title: string; value?:
   return href ? <Link href={href}>{inner}</Link> : inner;
 }
 
+async function copyAndOpenIrina(title: string, mode: string) {
+  const prompt = buildIrinaPrompt(title, mode);
+  await navigator.clipboard.writeText(prompt);
+  window.open("https://chatgpt.com/", "_blank", "noopener,noreferrer");
+}
+
 export function WriteButton({ title, mode = "naver" }: { title: string; mode?: string }) {
-  const label = mode === "google" ? "Google 작성" : "네이버 작성";
+  const label = mode === "google" ? "Google 작성" : mode === "image" ? "이미지 제작" : "네이버 작성";
   return (
-    <Link href={`/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">
+    <button
+      type="button"
+      onClick={() => copyAndOpenIrina(title, mode)}
+      className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white"
+      title="이리나 글쓰기 명령을 복사하고 ChatGPT를 엽니다. 열린 창에서 Ctrl+V만 누르세요."
+    >
       {label}
-    </Link>
+    </button>
   );
 }
 

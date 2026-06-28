@@ -1,6 +1,6 @@
 export const irinaWritingRules = {
-  project: "Project027.5",
-  title: "이리나 글쓰기 연결",
+  project: "Project028.1",
+  title: "이리나 자동 글쓰기 연결",
   locked: true,
   naver: {
     title: "네이버 작성",
@@ -17,9 +17,10 @@ export const irinaWritingRules = {
       "쿠팡파트너스 고지문 한 줄",
     ],
     rules: [
+      "바로 복붙 가능한 네이버 원고만 작성한다.",
       "네이버용 글에는 Google 제목/본문을 포함하지 않는다.",
       "생활백서맘 엄마 말투로 쓴다.",
-      "번호식 단계 설명을 남발하지 않는다.",
+      "AI 설명체, 공공기관 말투, 강의체를 금지한다.",
       "별점·점수는 출력하지 않는다.",
       "쿠팡 고지문은 마지막 한 줄에만 넣는다.",
     ],
@@ -37,6 +38,7 @@ export const irinaWritingRules = {
       "요약 문단",
     ],
     rules: [
+      "바로 복붙 가능한 Google용 글만 작성한다.",
       "Google 글은 네이버 글과 제목과 본문을 다르게 쓴다.",
       "검색 의도와 구조를 우선한다.",
       "네이버 감성 도입을 그대로 반복하지 않는다.",
@@ -45,6 +47,7 @@ export const irinaWritingRules = {
   },
   image: {
     title: "이미지 제작",
+    output: ["세로형 10컷 이미지 프롬프트"],
     rules: [
       "리니는 초등학교 3학년 여자아이 느낌",
       "밝은 크림톤 수채화",
@@ -60,6 +63,7 @@ export const irinaWritingRules = {
     "중복 주제 추천 금지",
     "연관 주제는 가능하되 말만 바꾼 중복은 금지",
     "SEO S/A 등급 우선 추천",
+    "제목/본문/FAQ/추천상품/해시태그/쿠팡고지문 규칙 준수",
   ],
 };
 
@@ -77,19 +81,27 @@ export function getModeRules(mode: string) {
 
 export function buildIrinaPrompt(topic: string, mode: string) {
   const current = getModeRules(mode);
-  return `[생활백서맘 이리나 글쓰기 연결]
+  const output = "output" in current ? current.output : ["이미지 프롬프트"];
 
+  return `너는 생활백서맘 운영본부의 항해사 이리나다.
+
+아래 내용을 절대 설명하지 말고, 바로 결과물만 작성한다.
+
+[작업]
 주제: ${topic}
 작성 모드: ${getModeLabel(mode)}
 
-절대 변경 금지 규칙:
+[절대 변경 금지 규칙]
 ${irinaWritingRules.fixed.map((rule) => `- ${rule}`).join("\n")}
 
-이번 출력 순서:
-${"output" in current ? current.output.map((item) => `- ${item}`).join("\n") : "- 이미지 프롬프트"}
+[출력 순서]
+${output.map((item) => `- ${item}`).join("\n")}
 
-이번 모드 규칙:
+[이번 모드 규칙]
 ${current.rules.map((rule) => `- ${rule}`).join("\n")}
 
-이 기준으로 바로 복사해서 사용할 수 있는 결과를 작성한다.`;
+[중요]
+- "알겠습니다", "작성하겠습니다", "아래와 같이" 같은 안내 문구를 쓰지 않는다.
+- 시스템 설명, 선택지, 개발 설명을 출력하지 않는다.
+- 지금 바로 ${getModeLabel(mode)} 결과물을 완성한다.`;
 }
