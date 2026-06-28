@@ -57,17 +57,17 @@ export const contentMap = [
   {
     group: "성장",
     done: ["체취", "사춘기", "여드름"],
-    todo: ["속옷 교체", "샤워습관", "생리 준비", "키성장", "체육복 관리", "친구관계 변화"],
+    todo: ["속옷 교체", "샤워습관", "생리 준비", "키성장", "체육복 관리", "친구관계 변화", "감정조절", "성교육"],
   },
   {
     group: "디지털",
     done: ["SNS 안전"],
-    todo: ["단체채팅방 예절", "스마트폰 가족규칙", "게임 시간", "유튜브 시청 규칙"],
+    todo: ["단체채팅방 예절", "스마트폰 가족규칙", "게임 시간", "유튜브 시청 규칙", "계정 보호"],
   },
   {
     group: "안전",
     done: ["물놀이"],
-    todo: ["횡단보도", "유괴 예방", "장마철 준비물", "참진드기", "등하교 안전"],
+    todo: ["횡단보도", "유괴 예방", "장마철 준비물", "참진드기", "등하교 안전", "놀이터 안전"],
   },
 ];
 
@@ -106,6 +106,10 @@ export const nextRecommendations = [
   },
 ];
 
+export function makeWriteLink(topic: string) {
+  return `/content-studio?topic=${encodeURIComponent(topic)}`;
+}
+
 function normalize(text: string) {
   return text
     .toLowerCase()
@@ -116,13 +120,18 @@ function normalize(text: string) {
 export function checkDuplicateTopic(input: string) {
   const normalized = normalize(input);
   const results = publishedContents.map((item) => {
-    const titleScore = normalize(item.title).includes(normalized) || normalized.includes(normalize(item.title).slice(0, 8)) ? 60 : 0;
+    const titleScore =
+      normalize(item.title).includes(normalized) ||
+      normalized.includes(normalize(item.title).slice(0, 8))
+        ? 60
+        : 0;
     const keywordScore = item.keywords.reduce((score, keyword) => {
       return normalized.includes(normalize(keyword)) ? score + 12 : score;
     }, 0);
     const score = Math.min(100, titleScore + keywordScore);
     return { ...item, similarity: score };
-  }).filter((item) => item.similarity >= 24)
+  })
+    .filter((item) => item.similarity >= 24)
     .sort((a, b) => b.similarity - a.similarity);
 
   return {
