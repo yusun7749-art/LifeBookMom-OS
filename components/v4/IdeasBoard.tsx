@@ -1,61 +1,40 @@
-import { duplicateCheck, recommended, contentMap } from "../../data/v4/usableERP";
-import { Box, SearchButton, Shell, WriteButton } from "./UsableLayout";
+import { recommended, duplicateCheck } from "../../data/v4/usableERP";
+import { Shell, WriteButton } from "./UsableLayout";
 
 export default function IdeasBoard() {
   const sample = duplicateCheck("초등학생");
+
   return (
-    <Shell title="주제찾기" desc="주제를 복사하지 않아도 여기서 검색하고 바로 작성합니다.">
-      <Box title="빠른 검색">
-        <div className="rounded-xl bg-[#FFFDF8] p-3">
-          <p className="font-black">검색 예시: 초등학생</p>
-          <p className="mt-1 text-xs text-[#7A6B5B]">실제 검색창 연결 전까지 버튼으로 바로 확인합니다.</p>
-          <div className="mt-2 flex gap-2">
-            <SearchButton query="초등학생" />
-            <SearchButton query="체취" />
-            <SearchButton query="사춘기" />
-            <SearchButton query="SNS" />
-          </div>
+    <Shell title="주제찾기" desc="추천 주제에서 네이버 / Google / 이미지까지 바로 실행합니다.">
+      <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
+        <h2 className="text-xl font-black">작성 추천 주제</h2>
+        <div className="mt-3 divide-y divide-[#EEE4D6]">
+          {recommended.map((item) => (
+            <div key={item.title} className="flex flex-wrap items-center justify-between gap-2 py-2">
+              <p className="min-w-0 flex-1 text-sm font-bold">
+                <span className="mr-2 rounded-full bg-[#DFF1E7] px-2 py-1 text-xs text-[#2F6B4F]">SEO {item.seoGrade}</span>
+                {item.title}
+              </p>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <WriteButton title={item.title} mode="naver" />
+                <WriteButton title={item.title} mode="google" />
+                <WriteButton title={item.title} mode="image" />
+              </div>
+            </div>
+          ))}
         </div>
-      </Box>
+      </section>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-2">
-        <Box title="작성 추천 주제">
-          <div className="space-y-2">
-            {recommended.map((r) => (
-              <div key={r.title} className="flex items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
-                <div>
-                  <p className="font-black">{r.title}</p>
-                  <p className="text-xs font-bold text-[#2F6B4F]">{r.reason}</p>
-                </div>
-                <WriteButton title={r.title} />
-              </div>
-            ))}
-          </div>
-        </Box>
-        <Box title="이미 쓴 글 확인">
-          <div className="space-y-2">
-            {sample.slice(0,4).map((r) => (
-              <div key={r.id} className="rounded-xl bg-[#FFF4EF] p-3">
-                <p className="font-black">{r.title}</p>
-                <p className="text-xs text-[#9F3D2E]">유사도 {r.score}% · 이미 작성됨</p>
-              </div>
-            ))}
-          </div>
-        </Box>
-      </div>
-
-      <div className="mt-4">
-        <Box title="비어 있는 주제">
-          <div className="grid gap-3 md:grid-cols-3">
-            {contentMap.map((g) => (
-              <div key={g.group} className="rounded-xl bg-[#FFFDF8] p-3">
-                <p className="font-black">{g.group}</p>
-                {g.todo.slice(0,5).map((t) => <div key={t} className="mt-2 flex justify-between rounded-lg bg-white p-2"><span className="text-xs font-bold">{t}</span><WriteButton title={`초등학생 ${t}`} /></div>)}
-              </div>
-            ))}
-          </div>
-        </Box>
-      </div>
+      <section className="mt-4 rounded-2xl border border-[#E4D5BE] bg-white p-4">
+        <h2 className="text-xl font-black">이미 쓴 글 확인</h2>
+        <div className="mt-3 divide-y divide-[#EEE4D6]">
+          {sample.slice(0, 6).map((item) => (
+            <div key={item.id} className="py-2 text-sm font-bold text-[#9F3D2E]">
+              {item.date} {item.title} · 유사도 {item.score}%
+            </div>
+          ))}
+        </div>
+      </section>
     </Shell>
   );
 }

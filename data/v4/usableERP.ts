@@ -1,8 +1,10 @@
+import { originalPublishedTitles, draftQueueTitles } from "./cmsOriginalTitles";
+
 export const erpMeta = {
-  project: "Project033",
+  project: "Project035",
   title: "생활백서맘 운영본부",
-  subtitle: "LOCK 규칙이 실제 글쓰기 요청문에 자동 포함됩니다.",
-  version: "운영체제 v3.3.0",
+  subtitle: "실제 발행 원본 제목을 기준으로 작성·수정·재생성을 관리합니다.",
+  version: "운영체제 v3.5.0",
 };
 
 export const menu = [
@@ -19,33 +21,54 @@ export const menu = [
   { title: "운영현황", href: "/dashboard" },
 ];
 
-export const published = [
-  { id: "p001", date: "2026-06-29", title: "초등학생 속옷 교체 시기와 위생 습관, 부모가 꼭 알려줘야 할 생활습관", group: "성장/위생", naver: "발행완료", google: "발행완료", image: "재검토 필요", keywords: ["속옷교체", "위생습관", "성장", "생활습관"], point: "속옷 교체 시기와 위생 습관" },
-  { id: "p002", date: "2026-06-28", title: "초등학생 체취 변화, 부모가 꼭 알아야 할 원인과 관리법", group: "성장", naver: "발행완료", google: "발행완료", image: "완료", keywords: ["체취", "땀냄새", "성장기", "위생"], point: "성장기 체취와 위생 습관" },
-];
+export const published = originalPublishedTitles.map((item) => ({
+  id: item.id,
+  date: item.date,
+  title: item.originalTitle,
+  group: item.category,
+  naver: item.naver,
+  google: item.google,
+  image: item.image,
+  keywords: item.keywords,
+  point: item.category,
+}));
 
-export const recommended = [
-  { title: "초등학생 체육복 관리와 세탁 습관", group: "성장", reason: "속옷·체취 글과 연관되지만 체육복 관리 중심이라 중복이 아닙니다.", relation: "체취 → 속옷 → 체육복 → 세탁", seoGrade: "S", duplicateRisk: "낮음", status: "작성 추천" },
-];
+export const recommended = draftQueueTitles.map((item) => ({
+  title: item.originalTitle,
+  group: item.category,
+  reason: "실제 발행 전 후보입니다. 발행완료 체크 전까지 추천 큐에 유지됩니다.",
+  relation: item.keywords.join(" → "),
+  seoGrade: "S",
+  duplicateRisk: "낮음",
+  status: "작성 추천",
+}));
 
-export const blocked = [
-  { title: "초등학생 속옷 교체 시기와 위생 습관", reason: "이미 발행완료" },
-  { title: "초등학생 체취 변화", reason: "이미 발행완료" },
-  { title: "초3 사춘기 신호", reason: "이미 발행완료" },
-];
+export const blocked = originalPublishedTitles.map((item) => ({
+  title: item.originalTitle,
+  reason: "이미 발행완료",
+}));
 
 export const stats = [
-  { title: "OS LOCK", value: "적용", link: "/os-lock" },
   { title: "원본 제목", value: published.length, link: "/cms-search" },
-  { title: "이미지 재검토", value: 1, link: "/image-guard" },
+  { title: "미발행 후보", value: recommended.length, link: "/ideas" },
+  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
   { title: "일괄 작성", value: "0/20", link: "/batch-board" },
 ];
 
 export const contentMap = [
   { group: "성장", done: ["체취", "사춘기", "여드름", "속옷 교체"], todo: ["샤워습관", "생리 준비", "키성장", "체육복 관리", "친구관계 변화"] },
+  { group: "디지털", done: ["SNS 안전"], todo: ["단체채팅방 예절", "스마트폰 가족규칙", "게임 시간"] },
+  { group: "안전", done: ["물놀이"], todo: ["횡단보도", "유괴 예방", "장마철 준비물"] },
 ];
 
-export const calendarItems = [];
+export const calendarItems = originalPublishedTitles.map((item) => ({
+  date: item.date,
+  title: item.originalTitle,
+  naver: item.naver,
+  google: item.google,
+  image: item.image,
+}));
+
 export const progress = [];
 export const todayTasks = [];
 export const todayTopicCandidates = recommended;

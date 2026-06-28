@@ -1,42 +1,29 @@
-import { published, recommended } from "../../data/v4/usableERP";
-import { Box, Shell, WriteButton, SearchButton } from "./UsableLayout";
+import { originalPublishedTitles } from "../../data/v4/cmsOriginalTitles";
+import { Shell, WriteButton } from "./UsableLayout";
+import { buildImagePrompt } from "../../data/v4/imageGuardV2";
 
 export default function PlatformBoard({ platform }: { platform: "네이버" | "Google" }) {
   const mode = platform === "네이버" ? "naver" : "google";
+
   return (
-    <Shell title={`${platform} 관리`} desc={`${platform} 작성, 확인, 미완료 글을 바로 처리합니다.`}>
-      <section className="grid gap-3 md:grid-cols-4">
-        <Box title="오늘 작성">
-          <div className="space-y-2">
-            {recommended.slice(0,3).map((r) => (
-              <div key={r.title} className="rounded-xl bg-[#EFF8F2] p-3">
-                <p className="font-black">{r.title}</p>
-                <div className="mt-2"><WriteButton title={r.title} mode={mode} /></div>
+    <Shell title={`${platform} 원본 제목 관리`} desc="실제 발행 원본 제목을 한 줄 목록으로 확인하고 바로 수정합니다.">
+      <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
+        <h2 className="text-xl font-black">전체 발행내역</h2>
+        <div className="mt-3 divide-y divide-[#EEE4D6]">
+          {originalPublishedTitles.map((item) => (
+            <div key={item.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+              <p className="min-w-0 flex-1 text-sm font-bold">
+                <span className="mr-3 text-[#2F6B4F]">{item.date}</span>
+                {item.originalTitle}
+              </p>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <WriteButton title={item.originalTitle} mode="naver" />
+                <WriteButton title={item.originalTitle} mode="google" />
+                <WriteButton title={item.originalTitle} mode="image" />
               </div>
-            ))}
-          </div>
-        </Box>
-        <Box title="미완료">
-          <div className="space-y-2">
-            {published.filter((p) => platform === "Google" ? p.google !== "발행완료" : p.naver !== "발행완료").map((p) => (
-              <div key={p.id} className="rounded-xl bg-[#FFF4EF] p-3">
-                <p className="font-black">{p.title}</p>
-                <p className="text-xs text-[#9F3D2E]">{platform === "Google" ? p.google : p.naver}</p>
-                <div className="mt-2"><WriteButton title={p.title} mode={mode} /></div>
-              </div>
-            ))}
-          </div>
-        </Box>
-        <Box title="작성 기준">
-          <div className="space-y-2 text-sm font-bold">
-            <p>제목 1개</p><p>본문 확인</p><p>체크리스트</p><p>FAQ</p><p>발행완료 연결</p>
-          </div>
-        </Box>
-        <Box title="최근 발행">
-          <div className="space-y-2">
-            {published.slice(0,4).map((p) => <div key={p.id} className="rounded-xl bg-[#FFFDF8] p-2 text-xs font-bold">{p.title}<div className="mt-1"><SearchButton query={p.title} /></div></div>)}
-          </div>
-        </Box>
+            </div>
+          ))}
+        </div>
       </section>
     </Shell>
   );
