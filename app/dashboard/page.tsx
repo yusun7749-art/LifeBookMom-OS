@@ -1,5 +1,5 @@
 import Dashboard from "../../components/v4/Dashboard";
 
-export default function DashboardPage() {
+export default function Page() {
   return <Dashboard />;
 }

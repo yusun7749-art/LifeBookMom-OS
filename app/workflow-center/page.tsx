@@ -1,3 +1,5 @@
+import WorkflowCenter from "../../components/v4/WorkflowCenter";
 
-import WorkflowCenter from '../../components/v4/WorkflowCenter';
-export default function Page(){return <WorkflowCenter/>}
+export default function Page() {
+  return <WorkflowCenter />;
+}

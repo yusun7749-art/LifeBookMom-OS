@@ -1,5 +1,5 @@
 import NavigatorCore from "../../components/v4/NavigatorCore";
 
-export default function NavigatorCorePage() {
+export default function Page() {
   return <NavigatorCore />;
 }

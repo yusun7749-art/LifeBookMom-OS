@@ -1,10 +1,10 @@
+import { PageShell, CardGrid } from "./OSLayout";
 
-import {revenueCenter} from '../../data/v4/revenueCenter';
-export default function RevenueCenter(){
- return <main style={{padding:32,fontFamily:'sans-serif'}}>
- <h1>💰 {revenueCenter.title}</h1>
- <p>{revenueCenter.project}</p>
- <p>Branch : {revenueCenter.branch}</p>
- <ul>{revenueCenter.sources.map(s=><li key={s}>{s}</li>)}</ul>
- </main>
+export default function RevenueCenter() {
+  const items = [{'title': 'Coupang Partners', 'status': 'READY', 'desc': '수익원을 한 화면에서 관리합니다.'}, {'title': 'Naver AdPost', 'status': 'READY', 'desc': '수익원을 한 화면에서 관리합니다.'}, {'title': 'Google AdSense', 'status': 'READY', 'desc': '수익원을 한 화면에서 관리합니다.'}, {'title': '월간 수익', 'status': 'READY', 'desc': '수익원을 한 화면에서 관리합니다.'}];
+  return (
+    <PageShell title="💰 Revenue Center" subtitle="수익원을 한 화면에서 관리합니다.">
+      <CardGrid items={items} />
+    </PageShell>
+  );
 }

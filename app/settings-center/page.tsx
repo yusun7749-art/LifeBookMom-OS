@@ -1,3 +1,5 @@
+import SettingsCenter from "../../components/v4/SettingsCenter";
 
-import SettingsCenter from '../../components/v4/SettingsCenter';
-export default function Page(){return <SettingsCenter/>}
+export default function Page() {
+  return <SettingsCenter />;
+}

@@ -1,17 +1,10 @@
-
-import { analyticsHub } from '../../data/v4/analyticsHub';
+import { PageShell, CardGrid } from "./OSLayout";
 
 export default function AnalyticsHub() {
+  const items = [{'title': '조회수', 'status': 'READY', 'desc': '조회수, 대표글, 리뉴얼 우선순위를 확인합니다.'}, {'title': '대표글 후보', 'status': 'READY', 'desc': '조회수, 대표글, 리뉴얼 우선순위를 확인합니다.'}, {'title': '리뉴얼 대상', 'status': 'READY', 'desc': '조회수, 대표글, 리뉴얼 우선순위를 확인합니다.'}, {'title': '성과 요약', 'status': 'READY', 'desc': '조회수, 대표글, 리뉴얼 우선순위를 확인합니다.'}];
   return (
-    <main style={{ padding: 32, fontFamily: 'sans-serif' }}>
-      <h1>📊 {analyticsHub.title}</h1>
-      <p>{analyticsHub.project}</p>
-      <p>Branch : {analyticsHub.branch}</p>
-      <ul>
-        {analyticsHub.panels.map((panel) => (
-          <li key={panel}>{panel}</li>
-        ))}
-      </ul>
-    </main>
+    <PageShell title="📈 Analytics Hub" subtitle="조회수, 대표글, 리뉴얼 우선순위를 확인합니다.">
+      <CardGrid items={items} />
+    </PageShell>
   );
 }
