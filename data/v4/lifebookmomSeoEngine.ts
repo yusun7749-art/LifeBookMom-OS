@@ -1,5 +1,5 @@
 export const lifebookmomSeoEngine = {
-  project: "Project033.1",
+  project: "Project033.2",
   title: "SEO 5등급 추천 엔진",
   lock: true,
   grades: [
@@ -29,5 +29,6 @@ export function buildSeoEngineText() {
 - B등급 이하는 추천하지 않는다.
 - 클릭률이 낮을 제목은 폐기한다.
 - 말만 바꾼 중복 제목은 폐기한다.
-- 감성 주제는 본문 상단 소주제로 분류한다.`;
+- 감성 주제는 제목 아래 소제목으로만 출력한다.
+- '감성주제'라는 라벨은 출력하지 않는다.`;
 }

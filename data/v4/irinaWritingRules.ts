@@ -4,16 +4,17 @@ import { buildVoiceEngineText } from "./lifebookmomVoiceEngine";
 import { buildSeoEngineText } from "./lifebookmomSeoEngine";
 
 export const irinaWritingRules = {
-  project: "Project033.1",
-  title: "이리나 글쓰기 요청문 v3.1",
+  project: "Project033.2",
+  title: "이리나 글쓰기 요청문 v3.2",
   locked: true,
 
-  // 기존 화면 호환용 fixed. 절대 삭제 금지.
   fixed: [
     ...lifebookmomConstitution.rules,
     ...lifebookmomStyleBook.seoTopicRule,
     ...lifebookmomStyleBook.voice,
     ...lifebookmomStyleBook.spacing,
+    ...lifebookmomStyleBook.imageRule,
+    ...lifebookmomStyleBook.coupangRule,
   ],
 
   naver: {
@@ -27,8 +28,13 @@ export const irinaWritingRules = {
       "요조체처럼 다정하고 부드럽게 쓴다.",
       "옆집 엄마가 실제 경험을 이야기하듯 쓴다.",
       "정보력은 유지하되 설명체가 아니라 대화체로 쓴다.",
+      "원고 안에 [이미지01], [이미지02], [이미지03]을 출력하지 않는다.",
+      "원고 안에 이미지 삽입 위치 문구를 출력하지 않는다.",
+      "이미지는 부모 체크리스트 아래 1장으로 운영본부에서만 관리한다.",
+      "쿠팡 고지문에 <sub></sub>를 쓰지 않는다.",
+      "쿠팡 고지문에 파트너스 ID 또는 AF1467107을 쓰지 않는다.",
+      "쿠팡 고지문은 정해진 한 줄만 출력한다.",
       "별점·점수는 출력하지 않는다.",
-      "쿠팡 고지문은 마지막 한 줄에만 넣는다.",
     ],
   },
   google: {
@@ -98,15 +104,31 @@ ${buildVoiceEngineText()}
 [출력 순서]
 ${output.map((item) => `- ${item}`).join("\n")}
 
-[이미지 삽입 위치 LOCK]
-${lifebookmomStyleBook.imagePosition.map((item) => `- ${item}`).join("\n")}
+[네이버 이미지 위치 LOCK]
+- 원고에는 이미지 관련 문구를 절대 출력하지 않는다.
+- 이미지는 운영본부 기준으로 부모 체크리스트 아래 1장만 사용한다.
 
 [이번 모드 규칙]
 ${current.rules.map((rule) => `- ${rule}`).join("\n")}
+
+[최종 출력 금지]
+- 🌿 감성주제
+- 감성주제
+- [이미지01]
+- [이미지02]
+- [이미지03]
+- 이미지 삽입 위치
+- <sub>
+- </sub>
+- 파트너스 ID
+- AF1467107
+
+[쿠팡 고지문 최종 형식]
+※ 이 포스팅은 쿠팡파트너스 활동의 일환으로 이에 따른 일정액의 수수료를 제공받을 수 있습니다.
 
 [중요]
 - "알겠습니다", "작성하겠습니다", "아래와 같이" 같은 안내 문구를 쓰지 않는다.
 - 시스템 설명, 선택지, 개발 설명을 출력하지 않는다.
 - 지금 바로 ${getModeLabel(mode)} 결과물을 완성한다.
-- 생활백서맘스럽지 않으면 출력하지 말고 처음부터 다시 작성한다.`;
+- 금지 문구가 하나라도 나오면 출력하지 말고 처음부터 다시 작성한다.`;
 }

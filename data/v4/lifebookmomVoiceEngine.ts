@@ -9,14 +9,19 @@ export function buildVoiceEngineText() {
 [문체 LOCK]
 ${lifebookmomStyleBook.voice.map((rule) => `- ${rule}`).join("\n")}
 
-[감성주제 LOCK]
-- 본문 상단에 반드시 감성주제를 넣는다.
-- 형식:
-🌿 감성주제
-{감성 소주제}
+[감성 소제목 LOCK]
+- 제목 바로 아래에 감성 소제목만 출력한다.
+- '🌿 감성주제', '감성주제', '감성 소주제'라는 글자는 절대 출력하지 않는다.
+- 감성 소제목은 따뜻한 문장형으로 쓴다.
 
 [모바일 줄바꿈 LOCK]
 ${lifebookmomStyleBook.spacing.map((rule) => `- ${rule}`).join("\n")}
+
+[이미지 출력 금지 LOCK]
+${lifebookmomStyleBook.imageRule.map((rule) => `- ${rule}`).join("\n")}
+
+[쿠팡 고지문 LOCK]
+${lifebookmomStyleBook.coupangRule.map((rule) => `- ${rule}`).join("\n")}
 
 [금지 문장]
 ${lifebookmomStyleBook.forbiddenPhrases.map((rule) => `- ${rule}`).join("\n")}
@@ -31,5 +36,5 @@ ${lifebookmomStyleBook.forbiddenPhrases.map((rule) => `- ${rule}`).join("\n")}
 공감 → 경험 → 정보 → 공감 → 정보 → 체크 → 응원 흐름으로 쓴다.
 
 [검사]
-AI 설명체처럼 느껴지면 처음부터 다시 작성한다.`;
+금지 문구가 하나라도 나오면 처음부터 다시 작성한다.`;
 }

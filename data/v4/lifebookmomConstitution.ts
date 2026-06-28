@@ -1,6 +1,6 @@
 export const lifebookmomConstitution = {
-  project: "Project033.1",
-  version: "LOCK v1.1",
+  project: "Project033.2",
+  version: "LOCK v1.2",
   title: "생활백서맘 헌법",
   lock: true,
   rules: [
@@ -14,5 +14,7 @@ export const lifebookmomConstitution = {
     "선장님이 승인한 규칙은 삭제하지 않고 추가만 한다.",
     "정보보다 공감을 먼저 전달한다.",
     "생활백서맘 Style Book과 Voice Engine을 모든 글쓰기 요청문에 반드시 포함한다.",
+    "네이버 원고에는 이미지 표시 문구를 출력하지 않는다.",
+    "쿠팡 고지문에는 HTML 태그와 파트너스 ID를 출력하지 않는다.",
   ],
 };
