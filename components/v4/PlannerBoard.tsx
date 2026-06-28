@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { calendarStatusColor, monthCalendar, weekdays, writeLink } from "../../data/v4/calendarERP";
 import { Shell } from "./UsableLayout";
@@ -5,6 +7,7 @@ import { Shell } from "./UsableLayout";
 function RefreshButton() {
   return (
     <button
+      type="button"
       onClick={() => window.location.reload()}
       className="rounded-xl bg-[#1F1A16] px-4 py-2 text-xs font-black text-white"
     >
