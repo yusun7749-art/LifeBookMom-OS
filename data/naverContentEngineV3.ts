@@ -1,230 +1,33 @@
-// Project018
-// Naver Content Engine V3 Sync
-// 네이버 원클릭 전용 통합 엔진
-// Google 엔진과 분리 유지
+// Project020 Patch03
+// Naver Content Engine V3 compatibility bridge.
+// 실제 네이버 원클릭 기준은 Naver Engine V4입니다.
 
-import { COUPANG_DISCLOSURE } from "./coupangOneLineRule";
+import {
+  NAVER_V4_VERSION,
+  NAVER_V4_COUPANG_DISCLOSURE,
+  NAVER_V4_FORBIDDEN_OUTPUT,
+  NAVER_V4_STRUCTURE,
+  buildNaverV4Prompt,
+  buildNaverV4RulesText,
+} from "./naverEngineV4";
 
-export const NAVER_ENGINE_DIVIDER = "──────────────────────────────";
-
-export const project018ForbiddenResponsePhrases = [
-  "응답 길이 제한 때문에",
-  "한 번에 생성하기에는",
-  "한 번의 답변에 모두 담는 것은 불가능합니다",
-  "Canvas",
-  "캔버스",
-  "DOCX",
-  "PDF",
-  "두 가지 방법",
-  "이어서 생성할까요",
-  "계속 생성할까요",
-  "1차/2차로 나누겠습니다",
-  "분량이 너무 길어서",
-  "토큰 제한",
-  "최대 출력 길이",
-];
-
-export const naverContentEngineV3Meta = {
-  project: "Project018",
-  title: "Naver Content Engine V3 Sync",
-  version: "NAVER_CONTENT_ENGINE_V3_PROJECT018_SYNC",
-  purpose:
-    "생활백서맘 네이버 원클릭을 기존 블로그 스타일에 맞게 고정 출력합니다.",
-  principle:
-    "항해사 대표 제목 1개 아래에 본문·체크리스트·이미지 위치·추천템·Q1~Q5·내부링크·마지막 문단을 한 장 안에 구성하고, 바로 아래 해시태그와 쿠팡 고지문을 붙입니다.",
+export {
+  NAVER_V4_VERSION,
+  NAVER_V4_COUPANG_DISCLOSURE,
+  NAVER_V4_FORBIDDEN_OUTPUT,
+  NAVER_V4_STRUCTURE,
+  buildNaverV4Prompt,
+  buildNaverV4RulesText,
 };
 
-export const naverContentEngineV3Rules = {
-  channel: [
-    "이 엔진은 단축키 1, 네이버 전용이다.",
-    "Google 제목, Google 본문, Google SEO 구조를 포함하지 않는다.",
-    "Google 엔진과 절대 혼합하지 않는다.",
-  ],
-  voice: [
-    "옆집 엄마가 이야기하듯 작성한다.",
-    "같은 초등학생 학부모가 경험을 나누듯 작성한다.",
-    "다정하지만 정보력은 살아 있어야 한다.",
-    "공감 → 정보 → 실천 → 공감 흐름을 유지한다.",
-    "AI 설명체, 공공기관 안내문, 전문가 강의체를 금지한다.",
-    "문장 끝은 ~해요, ~더라고요, ~좋겠어요, ~도움이 돼요 중심으로 자연스럽게 쓴다.",
-  ],
-  font: [
-    "네이버 본문은 15pt 기준이다.",
-    "쿠팡파트너스 고지문만 11pt 기준이다.",
-    "본문 전체를 11pt로 작성하지 않는다.",
-    "쿠팡 고지문 외에는 11pt 표현을 출력하지 않는다.",
-  ],
-  layout: [
-    "고정 구분선은 NAVER_ENGINE_DIVIDER만 사용한다.",
-    "구분선은 한 줄로 유지되도록 너무 길게 만들지 않는다.",
-    "구분선보다 길거나 짧은 선을 임의로 만들지 않는다.",
-    "큰 소제목 앞에는 고정 구분선을 넣는다.",
-    "구분선 위에는 빈 줄 2줄, 아래에는 빈 줄 2줄을 둔다.",
-    "문단 사이에는 빈 줄 1줄 이상을 둔다.",
-    "FAQ 각 문항 사이에는 빈 줄 1줄 이상을 둔다.",
-    "추천상품 각 상품 사이에는 고정 구분선을 넣는다.",
-    "내부링크 앞뒤, 마지막 문단 앞, 해시태그 앞, 쿠팡 고지문 앞에는 빈 줄 2줄을 둔다.",
-  ],
-  outputOrder: [
-    "항해사 대표 제목 1개",
-    "네이버 본문 15pt 기준 구성",
-    "부모 체크리스트",
-    "이미지 삽입 위치 1개",
-    "생활백서맘 추천템 3개 실제 상품명",
-    "Q1~Q5",
-    "📚 함께 읽으면 도움이 되는 글",
-    "마지막 문단",
-    "해시태그 30개 한 줄",
-    "쿠팡파트너스 고지문 한 줄",
-  ],
-  image: [
-    "이미지 삽입 위치는 1개만 출력한다.",
-    "이미지 삽입 위치는 부모 체크리스트 바로 아래에 둔다.",
-    "이미지 삽입 위치는 생활백서맘 추천템 바로 위에 둔다.",
-    "이미지 위치 ①, 이미지 위치 ② 표기를 사용하지 않는다.",
-  ],
-  product: [
-    "추천상품은 초등학교 3~4학년 아이 또는 부모 실구매 선호 기준이다.",
-    "카테고리명이 아니라 실제 제품명부터 출력한다.",
-    "상품명 자리에 '실제 판매 상품명', '추천상품명', '상품명' 같은 템플릿 문구를 출력하지 않는다.",
-    "각 상품은 실제 제품명 → ★★★★★ 점수 → 추천 이유 → 👉 [쿠팡파트너스 링크] 순서로 출력한다.",
-    "각 상품마다 쿠팡 링크 위치를 바로 아래에 둔다.",
-    "유아·미취학 상품, 핑크퐁, 뽀로로, 타요, 아기상어, 코코멜론 계열은 제외한다.",
-  ],
-  forbiddenLabels: [
-    "FAQ",
-    "해시태그 (30개)",
-    "마무리",
-    "쿠팡파트너스 링크",
-    "파트너스 ID",
-    "출력 순서",
-    "추천상품명",
-    "실제 판매 상품명",
-    "상품명",
-  ],
-  coupangDisclosure: COUPANG_DISCLOSURE,
-};
+export const naverContentEngineV3Version = NAVER_V4_VERSION;
 
-function bulletLines(items: string[]) {
-  return items.map((item) => `- ${item}`).join("\n");
+export function buildNaverContentEngineV3Prompt(project: any, bootstrapPrompt = "") {
+  return buildNaverV4Prompt(project, bootstrapPrompt);
 }
 
-export function buildNaverContentEngineV3Prompt(project: any, bootstrapPrompt: string) {
-  return `${bootstrapPrompt}
-
----
-
-[Naver Content Engine V3 · Project018 Constitution Sync]
-이 요청은 네이버 전용입니다. Google 제목, Google 본문, Google SEO 구조를 절대 포함하지 마세요.
-
-[최종 목표]
-선장님이 결과물을 Ctrl+A → Ctrl+C → 네이버 블로그 Ctrl+V 했을 때 삭제하거나 고칠 부분이 없게 작성하세요.
-한 응답 안에 들어오도록 원고를 2,500~3,500자 내외로 압축해서 완성하세요.
-시스템 제한, 출력 길이, Canvas, DOCX, PDF 같은 이야기는 절대 하지 말고 바로 원고만 작성하세요.
-
-[프로젝트]
-주제: ${project.topic}
-카테고리: ${project.category}
-네이버 기존 제목: ${project.naverTitle}
-현재 문제점: ${project.issue}
-다음 작업: ${project.next}
-쿠팡 파트너스 ID: AF1467107
-
-[선장님이 확정한 네이버 출력 구조]
-1. 항해사 대표 제목 1개
-2. 바로 아래에 네이버 본문 15pt 기준 구성
-3. 부모 체크리스트
-4. 이미지 삽입 위치
-5. 생활백서맘 추천템 3개(실제 상품명)
-6. Q1~Q5
-7. 내부링크
-8. 마지막 문단
-9. 바로 아래 해시태그 30개 한 줄
-10. 바로 아래 쿠팡파트너스 고지문 한 줄
-
-[말투]
-${bulletLines(naverContentEngineV3Rules.voice)}
-
-[폰트]
-${bulletLines(naverContentEngineV3Rules.font)}
-
-[고정 구분선]
-아래 구분선만 사용하세요. 더 길거나 짧게 만들지 마세요.
-네이버에서 2줄로 꺾이면 안 됩니다.
-
-${NAVER_ENGINE_DIVIDER}
-
-[레이아웃]
-${bulletLines(naverContentEngineV3Rules.layout)}
-
-[이미지 위치]
-아래 블록을 부모 체크리스트 바로 아래, 생활백서맘 추천템 바로 위에 정확히 1개만 출력하세요.
-━━━━━━━━━━━━━━━━━━━━━━
-📷 이미지 삽입 위치
-생활백서맘 세로형 10컷 인포그래픽
-━━━━━━━━━━━━━━━━━━━━━━
-
-[추천상품 형식]
-추천상품은 본문 안에 그대로 출력하세요. 절대 우측 카드나 별도 영역으로 빼지 마세요.
-'실제 제품명' 같은 템플릿 문구는 쓰지 말고 실제 제품명을 바로 넣으세요.
-
-🛒 생활백서맘 추천템
-
-🥇 삼성전자 Galaxy SmartTag2처럼 실제 제품명
-
-★★★★★ 98점
-
-추천 이유
-같은 학부모에게 설명하듯, 왜 이 주제와 연결되는지 다정하게 작성해요.
-👉 [쿠팡파트너스 링크]
-
-${NAVER_ENGINE_DIVIDER}
-
-🥈 실제 제품명
-
-★★★★★ 97점
-
-추천 이유
-초3~4학년 아이 또는 부모에게 왜 필요한지 작성해요.
-👉 [쿠팡파트너스 링크]
-
-${NAVER_ENGINE_DIVIDER}
-
-🥉 실제 제품명
-
-★★★★★ 96점
-
-추천 이유
-실구매 가능성과 활용도를 중심으로 작성해요.
-👉 [쿠팡파트너스 링크]
-
-[FAQ]
-- FAQ라는 제목은 출력하지 마세요.
-- 바로 Q1.부터 시작하세요.
-- Q1~Q5 각 문항 사이에는 빈 줄을 충분히 두세요.
-
-[내부링크]
-- 제목은 정확히 '📚 함께 읽으면 도움이 되는 글'로 출력하세요.
-- 3~5개를 짧은 목록으로 출력하세요.
-
-[해시태그]
-- 해시태그 제목은 출력하지 마세요.
-- 해시태그 30개를 한 줄로만 출력하세요.
-
-[쿠팡 고지문]
-- 마지막 줄에만 출력하세요.
-- 반드시 한 줄로 출력하세요.
-- 줄바꿈 금지.
-- 추가 문장 금지.
-- URL 금지.
-- 파트너스 ID 출력 금지.
-- 정확히 아래 문장만 출력하세요.
-${COUPANG_DISCLOSURE}
-
-[절대 금지 응답]
-아래 표현은 절대 출력하지 마세요.
-${bulletLines(project018ForbiddenResponsePhrases)}
-
-[최종 출력]
-설명하지 말고 바로 복붙용 네이버 원고만 출력하세요.`;
+export function buildNaverContentEngineV3RulesText() {
+  return buildNaverV4RulesText();
 }
+
+export const naverContentEngineV3RulesText = buildNaverContentEngineV3RulesText();

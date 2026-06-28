@@ -56,7 +56,7 @@ export default function AILauncherPanel({
         <div>
           <h2 className="text-3xl font-black">🚀 AI Launcher</h2>
           <p className="mt-2 font-bold text-[#7A6B5B]">
-            네이버와 Google은 분리되어 있고, 네이버는 Project018 동기화 헌법을 사용합니다.
+            네이버와 Google은 분리되어 있고, 네이버는 Project020 동기화 헌법을 사용합니다.
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function AILauncherPanel({
         >
           1️⃣ 네이버 원클릭
           <p className="mt-2 text-sm text-[#D9CBB7]">
-            Project018 · 네이버 전용 · 복붙형 원고
+            Project020 · 네이버 전용 · 복붙형 원고
           </p>
         </button>
 

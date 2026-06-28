@@ -1,11 +1,11 @@
-// Project000
+// Project020 Patch01
 // Constitution Center
 // 생활백서맘 OS 최상위 헌법 센터
 
 export const constitutionMeta = {
   project: "Project000",
   title: "Constitution Center",
-  version: "CONSTITUTION_v1.0",
+  version: "CONSTITUTION_v2.0_PROJECT020",
   purpose:
     "생활백서맘 OS의 모든 기능이 가장 먼저 따라야 하는 최상위 기준입니다.",
   articleZero:
@@ -13,14 +13,19 @@ export const constitutionMeta = {
 };
 
 export const constitutionHierarchy = [
+  "OS_MANIFEST",
   "Constitution Center",
+  "Decision Log",
+  "Version Manager",
+  "Asset Registry",
+  "Change Approval",
+  "Recovery",
   "Rule Center",
   "Brand Center",
   "Character Bible",
   "Product Intelligence",
   "Shortcut Center",
   "Memory Center",
-  "Daily Brief",
   "Workflow Engine",
 ];
 
@@ -55,10 +60,10 @@ export const lockedRules = [
   },
   {
     id: "LOCK-005",
-    title: "단축키 1 제목 규칙",
-    value: "SEO 제목 3개 폐기, 항해사 대표 제목 1개만 선정",
+    title: "네이버 V4 출력 구조",
+    value: "물놀이 글 형식 기준: 제목 → 공감 도입 → 본문 → 체크리스트 → 이미지 → 추천 아이템 → 마무리 → FAQ → 해시태그 → 쿠팡",
     level: "LOCKED",
-    reason: "선장님이 다시 고르는 시간을 없애기 위함",
+    reason: "복붙 작업과 브랜드 문체 안정화",
   },
   {
     id: "LOCK-006",
@@ -76,10 +81,10 @@ export const lockedRules = [
   },
   {
     id: "LOCK-008",
-    title: "추천상품",
-    value: "초3~4학년 부모 실구매 기준, 실제 상품명까지 추천",
+    title: "추천상품 출력 규칙",
+    value: "실제 상품명 + 추천 이유 + 쿠팡 링크만 출력, 별점/점수/순위 표시 금지",
     level: "LOCKED",
-    reason: "카테고리명이 아니라 바로 링크를 넣을 수 있는 상품명 필요",
+    reason: "네이버 원고의 자연스러움과 복붙 편의성 유지",
   },
 ];
 
@@ -97,15 +102,17 @@ export const imageConstitution = [
 
 export const contentConstitution = [
   "단축키 1은 네이버 전용이다.",
-  "단축키 1은 항해사 대표 제목 1개만 출력한다.",
   "단축키 1에는 Google 제목과 Google 본문을 넣지 않는다.",
+  "네이버 원클릭은 V4 구조만 사용한다.",
+  "V4 구조는 선장님이 제공한 여름철 물놀이 안전수칙 글 형식을 기준으로 한다.",
   "네이버 본문은 15pt 기준이다.",
   "쿠팡파트너스 고지문만 11pt로 안내한다.",
-  "FAQ는 5개를 기본으로 한다.",
-  "해시태그는 30개를 기본으로 한다.",
-  "내부 링크 추천과 이미지 삽입 위치를 포함한다.",
+  "번호 1~10을 출력하지 않는다.",
+  "Markdown #, ##, ###을 출력하지 않는다.",
+  "SEO 제목 추천, 항해사 대표 제목 같은 안내 문구를 출력하지 않는다.",
+  "FAQ는 자주 묻는 질문(FAQ) 제목과 Q1~Q5를 기본으로 한다.",
+  "해시태그는 30개를 제목 없이 한 줄로 출력한다.",
   "이미지 삽입 위치는 부모 체크리스트 바로 아래 1개만 출력한다.",
-  "해시태그는 제목 없이 한 줄로 출력한다.",
   "쿠팡 고지문은 마지막 한 줄만 출력한다.",
   "Canvas, DOCX, PDF, 응답 길이 제한 안내를 출력하지 않는다.",
 ];
@@ -117,21 +124,21 @@ export const productConstitution = [
   "상품은 카테고리명이 아니라 실제 상품명까지 출력한다.",
   "부모 실구매 가능성, 평점, 리뷰, 브랜드 신뢰도, 주제 적합성을 함께 본다.",
   "Product Intelligence 기준을 통과한 상품만 추천한다.",
+  "Product Intelligence 점수는 내부 평가에만 사용한다.",
+  "네이버 원고에는 별점, 점수, 98점, 97점, 96점, 평가점수를 출력하지 않는다.",
+  "추천상품은 실제 상품명 → 추천 이유 → 👉 [쿠팡파트너스 링크] 순서로 출력한다.",
 ];
 
 export const shortcutConstitution = {
   shortcut1: [
-    "🏆 항해사 대표 제목 1개",
-    "선정 이유",
+    "제목 1개",
+    "공감 도입",
     "네이버 본문 15pt 기준",
     "부모 체크리스트",
-    "이미지 삽입 위치 1개",
-    "Product Intelligence 기반 실제 상품명 추천 3개",
-    "각 상품 추천 이유",
-    "👉 쿠팡파트너스 링크 위치",
-    "Q1~Q5",
-    "내부 링크 추천",
-    "마지막 문단",
+    "부모 체크리스트 바로 아래 이미지 삽입 위치 1개",
+    "💛 생활백서맘 추천 아이템 3개 / 실제 상품명 / 추천 이유 / 👉 [쿠팡파트너스 링크]",
+    "마무리",
+    "자주 묻는 질문(FAQ) Q1~Q5",
     "해시태그 30개 한 줄",
     "쿠팡파트너스 고지문 한 줄만 11pt",
   ],
@@ -166,14 +173,14 @@ export const shortcutConstitution = {
 export const amendmentHistory = [
   {
     date: "2026-06-28",
-    title: "Constitution v1.0 제정",
+    title: "Constitution v2.0 / Project020 운영본부 Freeze",
     changes: [
-      "이미지 헌법을 최상위 규칙에 포함",
-      "단축키 1에서 Google 제목 제거",
-      "네이버 본문 11pt 규칙 폐기",
-      "쿠팡 고지문만 11pt로 확정",
-      "추천상품은 실제 상품명까지 출력하도록 확정",
-      "초3~4학년 실구매 기준 Product Intelligence 적용",
+      "GitHub를 기준 저장소로 확정",
+      "네이버 V4를 활성 출력 구조로 확정",
+      "이전 네이버 V1~V3 규칙은 ARCHIVED 대상으로 지정",
+      "추천상품 점수/별점은 내부에서만 사용하고 네이버 출력에서는 제거",
+      "번호, Markdown, SEO 제목 추천 문구 출력 금지",
+      "쿠팡 고지문 한 줄 고정",
     ],
   },
 ];

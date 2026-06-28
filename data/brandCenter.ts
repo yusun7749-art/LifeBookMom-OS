@@ -1,8 +1,8 @@
 // LifeBookMom Brand Center
-// Project010 - 생활백서맘 Brand Operating Standard v1.0
+// Project020 - 생활백서맘 Brand Operating Standard v1.0
 
 export const brandBible = {
-  project: "Project010 - Brand Center",
+  project: "Project020 - Brand Center",
   brandName: "생활백서맘",
   characterName: "리니",
   standardVersion: "LBM-BOS v1.0",

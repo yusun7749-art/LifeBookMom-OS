@@ -1,115 +1,28 @@
-// Project018
-// Naver Constitution Sync
-// Bootstrap, Shortcut, Content Studio, Naver Engine이 동일하게 참조하는 네이버 전용 활성 헌법
+// Project020 Patch03
+// Project018 compatibility bridge.
+// 기존 Project018 참조는 모두 Naver Engine V4로 연결합니다.
 
-export const PROJECT018_NAVER_DIVIDER = "──────────────────────────────";
+import {
+  NAVER_V4_VERSION,
+  NAVER_V4_COUPANG_DISCLOSURE,
+  NAVER_V4_FORBIDDEN_OUTPUT,
+  NAVER_V4_STRUCTURE,
+  buildNaverV4Prompt,
+  buildNaverV4RulesText,
+} from "./naverEngineV4";
 
-export const PROJECT018_COUPANG_DISCLOSURE = "이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.";
-
-export const project018NaverSyncMeta = {
-  project: "Project018",
-  title: "Naver Constitution Sync",
-  version: "PROJECT018_NAVER_SYNC_v1.0",
-  purpose:
-    "네이버 원클릭에서 오래된 규칙이 다시 섞이지 않도록 Bootstrap, Shortcut, Content Studio, Naver Engine 기준을 하나로 동기화합니다.",
-};
-
-export const project018ForbiddenResponsePhrases = [
-  "응답 길이 제한",
-  "분량이 너무 길어서",
-  "한 번에 생성하기에는",
-  "한 번의 답변에 모두 담는 것은 불가능합니다",
-  "Canvas",
-  "DOCX",
-  "PDF",
-  "두 가지 방법",
-  "이어서 작성할까요",
-  "계속 생성할까요",
-  "1차/2차로 나누겠습니다",
-  "현재 시스템상",
-  "토큰 제한",
-];
-
-export const project018NaverActiveRules = {
-  channel: [
-    "단축키 1은 네이버 전용이다.",
-    "Google 제목, Google 본문, Google SEO 구조를 포함하지 않는다.",
-    "Google 규칙은 단축키 2에서만 사용한다.",
-  ],
-  outputShape: [
-    "항해사 대표 제목 1개는 본문과 분리해서 가장 위에 1개만 출력한다.",
-    "그 아래에 네이버 본문 복붙 영역을 하나의 문서처럼 이어서 출력한다.",
-    "네이버 본문 복붙 영역에는 본문, 부모 체크리스트, 이미지 삽입 위치, 추천템, Q1~Q5, 내부링크, 마지막 문단이 들어간다.",
-    "네이버 본문 복붙 영역 바로 아래에 해시태그 30개를 제목 없이 한 줄로 출력한다.",
-    "해시태그 바로 아래 마지막 줄에 쿠팡 고지문을 한 줄로 출력한다.",
-  ],
-  voice: [
-    "옆집 엄마가 이야기하듯 작성한다.",
-    "같은 초등학생 학부모가 다른 학부모에게 말하듯 작성한다.",
-    "다정하지만 정보력은 살아 있어야 한다.",
-    "AI 설명체, 공공기관 안내문, 전문가 강의체를 금지한다.",
-    "공감 → 정보 → 실천 → 공감 흐름을 유지한다.",
-  ],
-  naverLayout: [
-    "네이버 본문은 15pt 기준이다.",
-    "쿠팡파트너스 고지문만 11pt 기준이다.",
-    "본문 전체를 11pt로 작성하지 않는다.",
-    "구분선은 PROJECT018_NAVER_DIVIDER만 사용한다.",
-    "구분선보다 길거나 짧은 선을 임의로 만들지 않는다.",
-    "구분선 위에는 빈 줄 2줄, 아래에는 빈 줄 2줄을 둔다.",
-    "문단 사이에는 빈 줄 1줄 이상을 둔다.",
-    "아래쪽 FAQ, 내부링크, 마지막 문단, 해시태그, 쿠팡 고지문이 붙지 않도록 빈 줄을 충분히 둔다.",
-  ],
-  image: [
-    "이미지 삽입 위치는 부모 체크리스트 바로 아래 1개만 출력한다.",
-    "이미지 삽입 위치는 생활백서맘 추천템 바로 위에 둔다.",
-    "이미지 위치 ①, 이미지 위치 ② 표기를 사용하지 않는다.",
-  ],
-  product: [
-    "추천상품은 본문 안에 그대로 유지한다.",
-    "추천상품을 우측 카드나 별도 영역으로 빼지 않는다.",
-    "추천상품은 실제 제품명부터 출력한다.",
-    "각 상품은 실제 제품명 → ★★★★★ 점수 → 추천 이유 → 👉 [쿠팡파트너스 링크] 순서로 출력한다.",
-    "상품명 자리에 실제 판매 상품명, 추천상품명, 상품명 같은 템플릿 문구를 출력하지 않는다.",
-    "추천상품은 3개를 기본으로 하고, 필요 시 5개까지 가능하다.",
-  ],
-  coupang: [
-    "쿠팡 고지문은 마지막 줄에만 출력한다.",
-    "쿠팡 고지문은 반드시 한 줄로 출력한다.",
-    "쿠팡 고지문에 줄바꿈을 넣지 않는다.",
-    "추가 설명 문장, URL, 파트너스 ID를 출력하지 않는다.",
-    `정확한 고지문: 이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.`,
-  ],
-  forbiddenLabels: [
-    "FAQ",
-    "해시태그 (30개)",
-    "마무리",
-    "쿠팡파트너스 링크",
-    "파트너스 ID",
-    "출력 순서",
-    "추천상품명",
-    "실제 판매 상품명",
-    "상품명",
-    "항해사 평가 리포트",
-  ],
+export {
+  NAVER_V4_VERSION,
+  NAVER_V4_COUPANG_DISCLOSURE,
+  NAVER_V4_FORBIDDEN_OUTPUT,
+  NAVER_V4_STRUCTURE,
+  buildNaverV4Prompt,
+  buildNaverV4RulesText,
 };
 
 export function buildProject018NaverRulesText() {
-  return `[Project018 Naver Constitution Sync]
-- 이 요청은 네이버 전용이다.
-- Google 제목, Google 본문, Google SEO 구조를 포함하지 않는다.
-- 항해사 대표 제목 1개는 본문과 분리해서 가장 위에 1개만 출력한다.
-- 그 아래에 네이버 본문 복붙 영역을 하나의 문서처럼 이어서 출력한다.
-- 네이버 본문 복붙 영역에는 본문, 부모 체크리스트, 이미지 삽입 위치, 생활백서맘 추천템, Q1~Q5, 📚 함께 읽으면 도움이 되는 글, 마지막 문단이 들어간다.
-- 네이버 본문 복붙 영역 바로 아래에 해시태그 30개를 제목 없이 한 줄로 출력한다.
-- 해시태그 바로 아래 마지막 줄에 쿠팡 고지문을 한 줄로 출력한다.
-- 추천상품은 본문 안에 그대로 유지한다. 우측 카드나 별도 영역으로 빼지 않는다.
-- 쿠팡 고지문은 반드시 아래 문장 그대로 한 줄만 출력한다.
-이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.
-- 아래 문구를 절대 출력하지 않는다: 응답 길이 제한, 분량이 너무 길어서, Canvas, DOCX, PDF, 두 가지 방법, 한 번에 생성할 수 없습니다, 계속 생성할까요, 1차/2차로 나누겠습니다.
-- 시스템 제한을 설명하지 말고 바로 원고를 작성한다.
-- 네이버 본문은 15pt 기준이다.
-- 쿠팡파트너스 고지문만 11pt 기준이다.
-- 고정 구분선은 아래 선만 사용한다.
-──────────────────────────────`;
+  return buildNaverV4RulesText();
 }
+
+export const project018NaverSyncVersion = NAVER_V4_VERSION;
+export const project018NaverRulesText = buildProject018NaverRulesText();

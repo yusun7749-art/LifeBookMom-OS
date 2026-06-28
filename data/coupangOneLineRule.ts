@@ -1,11 +1,11 @@
-// Project018
+// Project020
 // Coupang One Line Rule
 // 쿠팡 고지문은 이 파일의 문장만 사용합니다.
 
 export const COUPANG_DISCLOSURE = "이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받을 수 있습니다.";
 
 export const coupangOneLineRule = {
-  version: "PROJECT018_COUPANG_ONE_LINE",
+  version: "PROJECT020_COUPANG_ONE_LINE",
   active: [
     "쿠팡 고지문은 마지막 줄에만 출력한다.",
     "고지문은 반드시 한 줄로 출력한다.",

@@ -1,6 +1,6 @@
-// Project018
-// Content Studio v2 Prompt Builder
-// 네이버는 Project018 Naver Content Engine V3 Sync 사용, Google은 Google 전용 엔진 유지
+// Project020
+// Content Studio V4 Prompt Builder
+// 네이버는 Project020 Naver Engine V4 사용, Google은 Google 전용 엔진 유지
 
 import { buildBootstrapPrompt } from "./aiBootstrap";
 import { constitutionMeta } from "./constitutionCenter";
@@ -11,8 +11,8 @@ import { googleConstitutionActive } from "./googleConstitutionActive";
 
 export const contentStudioMeta = {
   project: "Project010",
-  title: "Content Studio v2",
-  version: "CONTENT_STUDIO_v2.7_PROJECT018_SYNC",
+  title: "Content Studio V4",
+  version: "CONTENT_STUDIO_V4_PROJECT020",
   purpose:
     "프로젝트 선택 후 네이버, Google, 이미지, 발행 완료까지 콘텐츠 제작센터 안에서 바로 실행합니다.",
   constitutionVersion: constitutionMeta.version,
@@ -20,7 +20,7 @@ export const contentStudioMeta = {
 
 export const studioStatus = [
   "Constitution",
-  "Project018 Sync",
+  "Project020 Sync",
   "Naver Engine V3",
   "Google Active Rule",
   "Brand",

@@ -1,11 +1,11 @@
-// Project000
+// Project020 Patch01
 // Shortcut Center
 // 생활백서맘 단축키 운영 규칙 고정 저장소
 
 export const shortcutCenterMeta = {
   project: "Project000",
   title: "Shortcut Center",
-  version: "SHORTCUT_CENTER_v1.0",
+  version: "SHORTCUT_CENTER_v2.0_NAVER_V4",
   purpose:
     "선장님이 숫자 하나만 입력해도 생활백서맘 작업을 바로 시작할 수 있도록 단축키 규칙을 저장합니다.",
   principle:
@@ -16,19 +16,19 @@ export const shortcutRules = [
   {
     key: "1",
     title: "네이버용 글 작성",
-    summary: "항해사 대표 제목 1개를 본문 밖에 두고, 네이버 본문 복붙 영역과 해시태그/쿠팡 고지문을 고정 형식으로 생성합니다.",
+    summary: "생활백서맘 네이버 V4 형식으로 바로 복사 가능한 원고를 생성합니다.",
     items: [
-      "🏆 항해사 대표 제목 1개 / 본문 밖 최상단",
+      "제목 1개",
+      "공감 도입",
       "네이버 본문 15pt 기준",
       "부모 체크리스트",
       "부모 체크리스트 바로 아래 이미지 삽입 위치 1개",
-      "생활백서맘 추천템 3개 / 실제 상품명 / ★★★★★ 점수 / 추천 이유 / 👉 [쿠팡파트너스 링크]",
-      "Q1~Q5",
-      "📚 함께 읽으면 도움이 되는 글",
-      "마지막 문단",
+      "💛 생활백서맘 추천 아이템 3개 / 실제 상품명 / 추천 이유 / 👉 [쿠팡파트너스 링크]",
+      "마무리",
+      "자주 묻는 질문(FAQ) Q1~Q5",
       "해시태그 30개 / 제목 없이 한 줄",
       "쿠팡파트너스 고지문 / 마지막 한 줄 / 11pt 기준",
-      "Canvas, DOCX, PDF, 응답 길이 제한 안내 금지",
+      "번호, Markdown, 별점, 점수, Canvas, DOCX, PDF, 응답 길이 제한 안내 금지",
     ],
   },
   {
@@ -87,9 +87,9 @@ export const shortcutRules = [
 
 export const titleSelectionRule = {
   oldRule: "네이버 SEO 제목 3개 추천",
-  newRule: "🏆 항해사 대표 제목 1개 선정",
+  newRule: "네이버 V4 제목 1개 선정",
   reason:
-    "여러 제목을 제안하면 선장님이 다시 고르는 시간이 생기므로, 항해사가 검색량·CTR·SEO·애드포스트 적합도를 종합해 하나만 선정합니다.",
+    "여러 제목을 제안하면 선장님이 다시 고르는 시간이 생기므로, 항해사가 검색량·CTR·SEO·애드포스트 적합도를 종합해 하나만 선정합니다. 단, 최종 원고에는 'SEO 제목 추천'이나 '항해사 대표 제목' 문구를 출력하지 않습니다.",
   criteria: [
     "네이버 검색량",
     "부모 클릭률",
@@ -97,7 +97,6 @@ export const titleSelectionRule = {
     "체류시간 가능성",
     "CTR",
     "애드포스트 친화도",
-    "Google SEO",
     "내부링크 연결성",
     "대표글 가능성",
   ],
@@ -113,7 +112,8 @@ export const shortcutUsageExamples = [
 export const shortcutPromise = [
   "선장님이 '단축키'라고 입력하면 최신 단축키 목록을 보여준다.",
   "선장님이 숫자만 입력해도 해당 작업을 바로 시작한다.",
-  "1번 네이버 글에서는 SEO 제목 3개가 아니라 대표 제목 1개만 선정한다.",
+  "1번 네이버 글에서는 SEO 제목 3개가 아니라 제목 1개만 선정한다.",
+  "1번 네이버 글은 생활백서맘 네이버 V4 구조를 따른다.",
   "추천상품은 초등학교 3~4학년 기준을 벗어나지 않는다.",
   "이미지 작업은 Brand Center와 리니 Character Bible을 먼저 적용한다.",
 ];

@@ -36,11 +36,11 @@ export default function ContentStudioPage() {
       <main className="space-y-8">
         <section className="rounded-[2rem] bg-[#231F1A] p-8 text-white">
           <p className="text-sm font-bold text-[#D9CBB7]">
-            {contentStudioMeta.project} · Project018
+            {contentStudioMeta.project} · Project020
           </p>
-          <h1 className="mt-3 text-5xl font-black">📝 Content Studio v2</h1>
+          <h1 className="mt-3 text-5xl font-black">📝 Content Studio V4</h1>
           <p className="mt-4 text-xl font-bold text-[#F7F1E8]">
-            네이버는 Project018 통합 엔진, Google은 별도 SEO 엔진으로 분리 실행합니다.
+            네이버는 Project020 통합 엔진, Google은 별도 SEO 엔진으로 분리 실행합니다.
           </p>
         </section>
 
