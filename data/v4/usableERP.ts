@@ -1,8 +1,8 @@
 export const erpMeta = {
-  project: "Project027.1",
+  project: "Project027.2",
   title: "생활백서맘 운영본부",
   subtitle: "중복은 막고, 연관 주제는 SEO 등급 기준으로 추천합니다.",
-  version: "운영체제 v2.7.1",
+  version: "운영체제 v2.7.2",
 };
 
 export const menu = [
@@ -50,6 +50,28 @@ export const published = [
     keywords: ["여드름", "피부", "세안", "위생"],
     point: "초기 여드름과 순한 관리",
   },
+  {
+    id: "p004",
+    date: "2026-06-27",
+    title: "초등학생 SNS 안전하게 사용하는 방법",
+    group: "디지털",
+    naver: "발행완료",
+    google: "작성중",
+    image: "완료",
+    keywords: ["SNS", "계정보호", "DM", "친구추가"],
+    point: "SNS 계정 보호와 부모 설정",
+  },
+  {
+    id: "p005",
+    date: "2026-06-26",
+    title: "여름철 물놀이 안전수칙, 아이를 절대 혼자 두지 마세요",
+    group: "안전",
+    naver: "발행완료",
+    google: "미작성",
+    image: "완료",
+    keywords: ["물놀이", "구명조끼", "방수팩", "안전"],
+    point: "여름 물놀이 안전수칙",
+  },
 ];
 
 export const recommended = [
@@ -95,13 +117,18 @@ export const blocked = [
   { title: "초등학생 체취 변화", reason: "이미 발행완료" },
   { title: "초3 사춘기 신호", reason: "이미 발행완료" },
   { title: "초3 여드름", reason: "이미 발행완료" },
+  { title: "초등학생 SNS 안전", reason: "이미 발행완료" },
+  { title: "여름철 물놀이 안전수칙", reason: "이미 발행완료" },
 ];
 
-export const stats = [
-  { title: "발행완료 글", value: published.length, link: "/cms-search" },
-  { title: "SEO S/A 추천", value: recommended.filter((r) => r.seoGrade === "S" || r.seoGrade === "A").length, link: "/ideas" },
-  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
-  { title: "Google 미완료", value: 0, link: "/google-board" },
+export const calendarItems = [
+  { date: "2026-06-24", title: "자기주도학습", naver: "발행완료", google: "발행완료", image: "완료" },
+  { date: "2026-06-25", title: "장마철 준비물", naver: "발행완료", google: "발행완료", image: "완료" },
+  { date: "2026-06-26", title: "물놀이 안전수칙", naver: "발행완료", google: "미작성", image: "완료" },
+  { date: "2026-06-27", title: "SNS 안전", naver: "발행완료", google: "작성중", image: "완료" },
+  { date: "2026-06-28", title: "체취 변화 / 사춘기", naver: "발행완료", google: "발행완료", image: "완료" },
+  { date: "2026-06-29", title: "속옷 교체 시기", naver: "작성예정", google: "작성예정", image: "대기" },
+  { date: "2026-06-30", title: "샤워습관", naver: "추천", google: "추천", image: "대기" },
 ];
 
 export const contentMap = [
@@ -109,6 +136,65 @@ export const contentMap = [
   { group: "디지털", done: ["SNS 안전"], todo: ["단체채팅방 예절", "스마트폰 가족규칙", "게임 시간", "유튜브 시청 규칙"] },
   { group: "안전", done: ["물놀이"], todo: ["횡단보도", "유괴 예방", "장마철 준비물", "참진드기", "등하교 안전"] },
 ];
+
+export const stats = [
+  { title: "발행완료 글", value: published.length, link: "/cms-search" },
+  { title: "SEO S/A 추천", value: recommended.filter((r) => r.seoGrade === "S" || r.seoGrade === "A").length, link: "/ideas" },
+  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
+  { title: "Google 미완료", value: published.filter((p) => p.google !== "발행완료").length, link: "/google-board" },
+];
+
+export const progress = [
+  { label: "애드센스 승인 목표", current: 17, total: 100 },
+  { label: "애드포스트 승인 목표", current: 22, total: 80 },
+  { label: "이번 달 발행 목표", current: 8, total: 60 },
+  { label: "중복 차단 적용", current: blocked.length, total: blocked.length },
+];
+
+export const todayTasks = [
+  { label: "네이버 작성", count: 2, status: "대기" },
+  { label: "Google 작성", count: 2, status: "대기" },
+  { label: "이미지 제작", count: 2, status: "대기" },
+  { label: "발행대기", count: 2, status: "확인 필요" },
+  { label: "중복 위험", count: blocked.length, status: "주의" },
+  { label: "SEO 추천", count: recommended.length, status: "추천" },
+];
+
+export const todayTopicCandidates = recommended.map((item) => ({
+  title: item.title,
+  naver: "추천",
+  google: "추천",
+  image: "대기",
+  publish: "미완료",
+  reason: `${item.reason} · SEO ${item.seoGrade}등급`,
+}));
+
+export const plannerDays = calendarItems.map((item) => ({
+  day: item.date.slice(-2),
+  status: item.title,
+  type: item.naver === "발행완료" ? "완료" : "예정",
+}));
+
+export const ideaCategories = ["학교", "건강", "생활", "교육", "디지털", "방학", "계절", "안전", "친구관계", "성장"];
+
+export const keywordIdeas = recommended.map((item) => item.title);
+
+export const platformStatus = [
+  { platform: "네이버", title: "생활백서맘 말투 중심 원고", current: "작성 대기", required: ["제목 1개", "본문", "체크리스트", "FAQ", "추천템", "해시태그", "쿠팡고지문"] },
+  { platform: "Google", title: "SEO 구조 중심 원고", current: "작성 대기", required: ["SEO 제목", "구조화 본문", "FAQ", "내부링크", "요약", "검색 의도"] },
+];
+
+export const publishFlow = ["원고 작성", "중복 검사", "이미지 승인", "네이버 발행", "Google 발행", "CMS 반영", "달력 반영", "통계 반영"];
+
+export const cmsSearchTabs = ["작성됨", "작성예정", "중복", "추천", "네이버", "Google", "이미지"];
+
+export function writeUrl(title: string, mode = "naver") {
+  return `/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`;
+}
+
+export function searchUrl(query: string) {
+  return `/cms-search?q=${encodeURIComponent(query)}`;
+}
 
 export function duplicateCheck(query: string) {
   const q = query.replace(/\s+/g, "").toLowerCase();
