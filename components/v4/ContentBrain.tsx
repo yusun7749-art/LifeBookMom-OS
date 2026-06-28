@@ -1,10 +1,10 @@
-import { blocked, contentMap, duplicateCheck, recommended, published } from "../../data/v4/usableERP";
-import { Box, SearchButton, Shell, WriteButton } from "./UsableLayout";
+import { blocked, contentMap, duplicateCheck, recommended } from "../../data/v4/usableERP";
+import { Box, SeoBadge, Shell, WriteButton } from "./UsableLayout";
 
 export default function ContentBrain() {
   const checks = ["초등학생 체취 변화", "초3 사춘기 신호", "초등학생 속옷 교체 시기"].map((q) => ({ q, results: duplicateCheck(q) }));
   return (
-    <Shell title="콘텐츠 두뇌" desc="이미 쓴 글은 막고, 안 쓴 주제는 바로 작성합니다.">
+    <Shell title="콘텐츠 두뇌" desc="이미 쓴 글은 막고, 연관 주제 중 SEO S/A등급만 작성으로 연결합니다.">
       <section className="grid gap-3 xl:grid-cols-3">
         <Box title="중복 추천 차단">
           <div className="space-y-2">
@@ -23,12 +23,20 @@ export default function ContentBrain() {
         <Box title="다음에 쓰면 좋은 글">
           <div className="space-y-2">
             {recommended.map((r) => (
-              <div key={r.title} className="flex items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
-                <div>
-                  <p className="font-black">{r.title}</p>
-                  <p className="text-xs font-bold text-[#2F6B4F]">{r.reason}</p>
+              <div key={r.title} className="rounded-xl bg-[#EFF8F2] p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-black">{r.title}</p>
+                      <SeoBadge grade={r.seoGrade} />
+                    </div>
+                    <p className="text-xs font-bold text-[#2F6B4F]">{r.reason}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <WriteButton title={r.title} mode="naver" />
+                    <WriteButton title={r.title} mode="google" />
+                  </div>
                 </div>
-                <WriteButton title={r.title} />
               </div>
             ))}
           </div>
@@ -54,26 +62,13 @@ export default function ContentBrain() {
                   {g.todo.map((t) => (
                     <div key={t} className="flex items-center justify-between rounded-lg bg-white p-2">
                       <span className="text-xs font-bold">□ {t}</span>
-                      <WriteButton title={`초등학생 ${t}`} />
+                      <div className="flex gap-1">
+                        <WriteButton title={`초등학생 ${t}`} mode="naver" />
+                        <WriteButton title={`초등학생 ${t}`} mode="google" />
+                      </div>
                     </div>
                   ))}
                 </div>
-              </div>
-            ))}
-          </div>
-        </Box>
-      </div>
-
-      <div className="mt-4">
-        <Box title="최근 작성한 글">
-          <div className="grid gap-2">
-            {published.map((p) => (
-              <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#FFFDF8] p-3">
-                <div>
-                  <p className="font-black">{p.title}</p>
-                  <p className="text-xs text-[#7A6B5B]">{p.date} · {p.point}</p>
-                </div>
-                <SearchButton query={p.keywords[0]} />
               </div>
             ))}
           </div>

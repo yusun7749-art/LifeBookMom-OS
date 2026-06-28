@@ -35,29 +35,20 @@ export function Box({ title, children }: { title: string; children: React.ReactN
   );
 }
 
-export function SmallCard({ title, value, desc, href }: { title: string; value?: string | number; desc?: string; href?: string }) {
-  const inner = (
-    <div className="rounded-2xl bg-[#FFFDF8] p-4">
-      <p className="font-black">{title}</p>
-      {value !== undefined && <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{value}</p>}
-      {desc && <p className="mt-1 text-xs font-bold text-[#6F6255]">{desc}</p>}
-    </div>
-  );
-  return href ? <Link href={href}>{inner}</Link> : inner;
-}
-
 export function WriteButton({ title, mode = "naver" }: { title: string; mode?: string }) {
+  const label = mode === "google" ? "Google 작성" : "네이버 작성";
   return (
     <Link href={`/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">
-      작성하기
+      {label}
     </Link>
   );
 }
 
-export function SearchButton({ query }: { query: string }) {
+export function SeoBadge({ grade }: { grade: string }) {
+  const bg = grade === "S" ? "#DFF1E7" : grade === "A" ? "#EFF8F2" : "#FFF4EF";
   return (
-    <Link href={`/cms-search?q=${encodeURIComponent(query)}`} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-[#1F1A16]">
-      검색
-    </Link>
+    <span className="rounded-full px-3 py-1 text-xs font-black text-[#2F6B4F]" style={{ background: bg }}>
+      SEO {grade}등급
+    </span>
   );
 }

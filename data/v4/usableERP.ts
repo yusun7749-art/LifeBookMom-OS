@@ -1,8 +1,8 @@
 export const erpMeta = {
-  project: "Project027",
+  project: "Project027.1",
   title: "생활백서맘 운영본부",
-  subtitle: "누르면 바로 일할 수 있는 운영 화면",
-  version: "운영체제 v2.7.0",
+  subtitle: "중복은 막고, 연관 주제는 SEO 등급 기준으로 추천합니다.",
+  version: "운영체제 v2.7.1",
 };
 
 export const menu = [
@@ -50,58 +50,44 @@ export const published = [
     keywords: ["여드름", "피부", "세안", "위생"],
     point: "초기 여드름과 순한 관리",
   },
-  {
-    id: "p004",
-    date: "2026-06-27",
-    title: "초등학생 SNS 안전하게 사용하는 방법",
-    group: "디지털",
-    naver: "발행완료",
-    google: "작성중",
-    image: "완료",
-    keywords: ["SNS", "계정보호", "DM", "친구추가"],
-    point: "SNS 계정 보호와 부모 설정",
-  },
-  {
-    id: "p005",
-    date: "2026-06-26",
-    title: "여름철 물놀이 안전수칙, 아이를 절대 혼자 두지 마세요",
-    group: "안전",
-    naver: "발행완료",
-    google: "미작성",
-    image: "완료",
-    keywords: ["물놀이", "구명조끼", "방수팩", "안전"],
-    point: "여름 물놀이 안전수칙",
-  },
 ];
 
 export const recommended = [
   {
     title: "초등학생 속옷 교체 시기와 위생 습관",
     group: "성장",
-    reason: "체취 글과 이어지지만 실천 내용이 달라 중복이 아닙니다.",
-    risk: "낮음",
+    reason: "체취 글과 연관되지만 핵심은 속옷 교체·세탁 루틴이라 중복이 아닙니다.",
+    relation: "체취 → 속옷 → 세탁 → 위생 루틴",
+    seoGrade: "S",
+    duplicateRisk: "낮음",
     status: "작성 추천",
   },
   {
     title: "초등학생 샤워습관, 스스로 씻기 시작하는 방법",
     group: "성장",
-    reason: "체취 이후 자연스럽게 이어지는 생활습관 주제입니다.",
-    risk: "낮음",
+    reason: "체취 글의 다음 단계이지만 샤워 독립 습관 중심이라 내용이 겹치지 않습니다.",
+    relation: "체취 → 샤워습관 → 자기관리",
+    seoGrade: "S",
+    duplicateRisk: "낮음",
     status: "작성 추천",
   },
   {
     title: "초등학생 생리 준비, 부모가 자연스럽게 알려주는 방법",
     group: "성장",
-    reason: "성장 시리즈에서 아직 비어 있는 핵심 주제입니다.",
-    risk: "낮음",
+    reason: "사춘기 글과 연관되지만 몸 변화 교육이라는 별도 검색 의도를 가집니다.",
+    relation: "사춘기 → 몸 변화 → 생리 준비",
+    seoGrade: "A",
+    duplicateRisk: "낮음",
     status: "작성 추천",
   },
   {
     title: "초등학생 친구관계 변화, 부모가 눈치채야 할 신호",
     group: "성장",
-    reason: "사춘기 글과 연결되지만 친구관계 중심으로 확장됩니다.",
-    risk: "중간",
-    status: "작성 추천",
+    reason: "사춘기 감정 글과 연관되지만 친구관계 중심으로 확장됩니다.",
+    relation: "사춘기 → 친구관계 → 감정조절",
+    seoGrade: "A",
+    duplicateRisk: "중간",
+    status: "검토 후 작성",
   },
 ];
 
@@ -109,18 +95,13 @@ export const blocked = [
   { title: "초등학생 체취 변화", reason: "이미 발행완료" },
   { title: "초3 사춘기 신호", reason: "이미 발행완료" },
   { title: "초3 여드름", reason: "이미 발행완료" },
-  { title: "초등학생 SNS 안전", reason: "이미 발행완료" },
-  { title: "여름철 물놀이 안전수칙", reason: "이미 발행완료" },
 ];
 
-export const calendarItems = [
-  { date: "2026-06-24", title: "자기주도학습", naver: "발행완료", google: "발행완료", image: "완료" },
-  { date: "2026-06-25", title: "장마철 준비물", naver: "발행완료", google: "발행완료", image: "완료" },
-  { date: "2026-06-26", title: "물놀이 안전수칙", naver: "발행완료", google: "미작성", image: "완료" },
-  { date: "2026-06-27", title: "SNS 안전", naver: "발행완료", google: "작성중", image: "완료" },
-  { date: "2026-06-28", title: "체취 변화 / 사춘기", naver: "발행완료", google: "발행완료", image: "완료" },
-  { date: "2026-06-29", title: "속옷 교체 시기", naver: "작성예정", google: "작성예정", image: "대기" },
-  { date: "2026-06-30", title: "샤워습관", naver: "추천", google: "추천", image: "대기" },
+export const stats = [
+  { title: "발행완료 글", value: published.length, link: "/cms-search" },
+  { title: "SEO S/A 추천", value: recommended.filter((r) => r.seoGrade === "S" || r.seoGrade === "A").length, link: "/ideas" },
+  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
+  { title: "Google 미완료", value: 0, link: "/google-board" },
 ];
 
 export const contentMap = [
@@ -128,21 +109,6 @@ export const contentMap = [
   { group: "디지털", done: ["SNS 안전"], todo: ["단체채팅방 예절", "스마트폰 가족규칙", "게임 시간", "유튜브 시청 규칙"] },
   { group: "안전", done: ["물놀이"], todo: ["횡단보도", "유괴 예방", "장마철 준비물", "참진드기", "등하교 안전"] },
 ];
-
-export const stats = [
-  { title: "발행완료 글", value: published.length, link: "/cms-search" },
-  { title: "작성 추천", value: recommended.length, link: "/ideas" },
-  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
-  { title: "Google 미완료", value: published.filter((p) => p.google !== "발행완료").length, link: "/google-board" },
-];
-
-export function writeUrl(title: string, mode = "naver") {
-  return `/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`;
-}
-
-export function searchUrl(query: string) {
-  return `/cms-search?q=${encodeURIComponent(query)}`;
-}
 
 export function duplicateCheck(query: string) {
   const q = query.replace(/\s+/g, "").toLowerCase();
