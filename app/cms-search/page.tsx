@@ -1,5 +1,5 @@
-import CMSSearchBoard from "../../components/v4/CMSSearchBoard";
+import CMSOriginalTitleBoard from "../../components/v4/CMSOriginalTitleBoard";
 
 export default function Page() {
-  return <CMSSearchBoard />;
+  return <CMSOriginalTitleBoard />;
 }
