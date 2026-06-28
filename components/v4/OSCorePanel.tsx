@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { osCore, osModules, osRules, osTimeline } from "../../data/v4/osCore";
+import { osCore, osGroups, osModules, osRules, osTimeline } from "../../data/v4/osCore";
 
 function Badge({ value }: { value: string }) {
   return (
@@ -18,7 +18,7 @@ export default function OSCorePanel() {
         <div>
           <h2 className="text-3xl font-black">🧬 OS Core</h2>
           <p className="mt-2 text-[#7A6B5B]">
-            Enterprise, Decision, Version, Recovery가 같은 기준 데이터를 읽습니다.
+            모든 Center가 하나의 OS Core 기준으로 연결됩니다.
           </p>
         </div>
         <Badge value={osCore.gitStatus} />
@@ -34,8 +34,8 @@ export default function OSCorePanel() {
           <p className="mt-2 font-black">{osCore.branch}</p>
         </div>
         <div className="rounded-2xl bg-[#FFFDF8] p-4">
-          <p className="text-xs font-black text-[#9A8B7B]">Latest Commit</p>
-          <p className="mt-2 font-black">{osCore.latestCommit}</p>
+          <p className="text-xs font-black text-[#9A8B7B]">Project</p>
+          <p className="mt-2 font-black">{osCore.currentProject}</p>
         </div>
         <div className="rounded-2xl bg-[#FFFDF8] p-4">
           <p className="text-xs font-black text-[#9A8B7B]">Baseline</p>
@@ -47,17 +47,37 @@ export default function OSCorePanel() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3 md:grid-cols-3 xl:grid-cols-9">
-        {osModules.map((module) => (
-          <Link key={module.key} href={module.href} className="rounded-2xl bg-[#F7F1E8] p-4">
-            <p className="font-black">{module.name}</p>
-            <p className="mt-2 text-sm font-bold text-[#2F6B4F]">{module.status}</p>
-          </Link>
+      <div className="mt-7 space-y-6">
+        {osGroups.map((group) => (
+          <div key={group.key} className="rounded-3xl bg-[#F7F1E8] p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-2xl font-black">{group.title}</p>
+                <p className="mt-1 text-sm font-bold text-[#7A6B5B]">{group.description}</p>
+              </div>
+              <Badge value={group.key.toUpperCase()} />
+            </div>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {osModules
+                .filter((module) => module.group === group.key)
+                .map((module) => (
+                  <Link
+                    key={module.key}
+                    href={module.href}
+                    className="rounded-2xl bg-white p-4 transition hover:-translate-y-1 hover:shadow-md"
+                  >
+                    <p className="font-black">{module.name}</p>
+                    <p className="mt-2 text-sm font-bold text-[#2F6B4F]">{module.status}</p>
+                  </Link>
+                ))}
+            </div>
+          </div>
         ))}
       </div>
 
       <div className="mt-6 space-y-3">
-        {osTimeline.slice(0, 4).map((item) => (
+        {osTimeline.map((item) => (
           <div key={item.project} className="rounded-2xl bg-[#FFFDF8] p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="font-black">{item.project} · {item.title}</p>
