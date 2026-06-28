@@ -1,10 +1,3 @@
-import AppShell from "../../components/AppShell";
-import OperationDashboard from "../../components/OperationDashboard";
 
-export default function DashboardPage() {
-  return (
-    <AppShell>
-      <OperationDashboard />
-    </AppShell>
-  );
-}
+import Dashboard from '../../components/v4/Dashboard';
+export default function Page(){return <Dashboard/>}
