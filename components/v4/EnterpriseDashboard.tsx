@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { osCenters, osMeta, todayMissions } from "../../data/v4/lifebookmomOS";
-import { CardGrid, PageShell, QuickActions } from "./OSLayout";
+import { koreanUILock, osCenters, osMeta, todayMissions } from "../../data/v4/lifebookmomOS";
+import { PageShell, QuickActions } from "./OSLayout";
 
 export default function EnterpriseDashboard() {
   return (
@@ -8,7 +8,14 @@ export default function EnterpriseDashboard() {
       <QuickActions />
 
       <section className="mt-8 rounded-[2rem] border border-[#E4D5BE] bg-white p-7">
-        <h2 className="text-3xl font-black">🏛 운영본부 통합 센터</h2>
+        <h2 className="text-3xl font-black">🔒 쉬운 용어 원칙</h2>
+        <p className="mt-3 rounded-2xl bg-[#EFF8F2] p-4 font-bold text-[#2F6B4F]">
+          {koreanUILock.rule}
+        </p>
+      </section>
+
+      <section className="mt-8 rounded-[2rem] border border-[#E4D5BE] bg-white p-7">
+        <h2 className="text-3xl font-black">🏛 운영본부 통합 메뉴</h2>
         <div className="mt-6 grid gap-6 xl:grid-cols-4">
           {osCenters.map((group) => (
             <div key={group.group} className="rounded-3xl bg-[#FFFDF8] p-5">

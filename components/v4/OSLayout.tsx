@@ -9,10 +9,10 @@ export function PageShell({ title, subtitle, children }: { title: string; subtit
         <h1 className="mt-4 text-5xl font-black">{title}</h1>
         <p className="mt-4 text-xl font-bold text-[#F7F1E8]">{subtitle}</p>
         <div className="mt-6 flex flex-wrap gap-3">
-          <Link href="/enterprise" className="rounded-2xl bg-[#DFF1E7] px-5 py-3 font-black text-[#1F1A16]">🏢 Enterprise</Link>
-          <Link href="/dashboard" className="rounded-2xl bg-white px-5 py-3 font-black text-[#1F1A16]">📊 Dashboard</Link>
-          <Link href="/content-studio" className="rounded-2xl bg-white px-5 py-3 font-black text-[#1F1A16]">📝 Content Studio</Link>
-          <Link href="/navigator-core" className="rounded-2xl bg-white px-5 py-3 font-black text-[#1F1A16]">🧭 Navigator</Link>
+          <Link href="/enterprise" className="rounded-2xl bg-[#DFF1E7] px-5 py-3 font-black text-[#1F1A16]">🏢 운영본부</Link>
+          <Link href="/dashboard" className="rounded-2xl bg-white px-5 py-3 font-black text-[#1F1A16]">📊 운영현황</Link>
+          <Link href="/content-studio" className="rounded-2xl bg-white px-5 py-3 font-black text-[#1F1A16]">📝 글쓰기</Link>
+          <Link href="/navigator-core" className="rounded-2xl bg-white px-5 py-3 font-black text-[#1F1A16]">🧭 오늘 할 일</Link>
         </div>
       </section>
       <div className="mt-8">{children}</div>
