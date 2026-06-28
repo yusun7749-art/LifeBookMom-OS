@@ -1,6 +1,5 @@
+import Dashboard from "../../components/v4/Dashboard";
 
-import Dashboard from '../../components/v4/Dashboard';
-
-export default function Page() {
+export default function DashboardPage() {
   return <Dashboard />;
 }
