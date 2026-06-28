@@ -1,13 +1,15 @@
+import { osCoreRuntimeStatus } from "./osCoreRuntime";
+
 export const osCore = {
-  repository: "LifeBookMom-OS",
-  branch: "project021-stabilize",
-  currentProject: "Project022-01 OS Core Refactor",
+  repository: osCoreRuntimeStatus.repository,
+  branch: osCoreRuntimeStatus.branch,
+  currentProject: "Project022-03 OS Core Auto Status",
   currentVersion: "OS v2.2.0",
-  latestCommit: "NEXT",
-  latestMessage: "Project022-01 OS core refactor",
+  latestCommit: osCoreRuntimeStatus.latestCommit,
+  latestMessage: osCoreRuntimeStatus.latestMessage,
   baselineCommit: "d11456b",
   baselineLabel: "Project020 Baseline",
-  gitStatus: "Clean",
+  gitStatus: osCoreRuntimeStatus.gitStatus,
   recoveryStatus: "Ready",
   rule: "GitHub = 기준 저장소, VS Code = 실행 확인 작업실",
 };
@@ -26,36 +28,28 @@ export const osModules = [
 
 export const osTimeline = [
   {
-    project: "Project022-01",
-    title: "OS Core Refactor",
-    commit: "NEXT",
+    project: "Project022-03",
+    title: "OS Core Auto Status",
+    commit: osCoreRuntimeStatus.latestCommit,
     version: "OS v2.2.0",
     status: "BUILDING",
+    reason: "Git branch, commit, status를 OS Core가 자동 참조하도록 변경",
+  },
+  {
+    project: "Project022-02",
+    title: "OS Core Enterprise Integration",
+    commit: "previous",
+    version: "OS v2.2.0",
+    status: "DONE",
+    reason: "Enterprise Home에 OS Core 연결",
+  },
+  {
+    project: "Project022-01",
+    title: "OS Core Refactor",
+    commit: "previous",
+    version: "OS v2.2.0",
+    status: "DONE",
     reason: "Enterprise, Decision, Version, Recovery가 하나의 osCore 데이터를 사용하도록 통합",
-  },
-  {
-    project: "Project021-07",
-    title: "Project State Core",
-    commit: "NEXT",
-    version: "OS v2.1.1",
-    status: "BUILDING",
-    reason: "공통 상태 데이터 도입",
-  },
-  {
-    project: "Project021-06",
-    title: "Version Center",
-    commit: "415b600",
-    version: "OS v2.1.0",
-    status: "DONE",
-    reason: "OS 버전과 변경 이력 화면화",
-  },
-  {
-    project: "Project021-05A",
-    title: "Decision Center Upgrade",
-    commit: "00a3ce9",
-    version: "OS v2.1.0",
-    status: "DONE",
-    reason: "결정 이유, 승인, 영향도, Commit 연결",
   },
   {
     project: "Project020",
