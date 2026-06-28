@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import OperationHome from "../components/v4/OperationHome";
 
 export default function Home() {
-  redirect("/enterprise");
+  return <OperationHome />;
 }

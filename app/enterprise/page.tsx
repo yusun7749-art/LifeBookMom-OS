@@ -1,5 +1,5 @@
-import EnterpriseDashboard from "../../components/v4/EnterpriseDashboard";
+import OperationHome from "../../components/v4/OperationHome";
 
-export default function Page() {
-  return <EnterpriseDashboard />;
+export default function EnterprisePage() {
+  return <OperationHome />;
 }
