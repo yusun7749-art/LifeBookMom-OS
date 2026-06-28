@@ -26,14 +26,14 @@ export const enterpriseOps = [
   {
     icon: "📜",
     title: "OS Manifest",
-    href: "/docs/os-manifest",
+    href: "/enterprise",
     desc: "현재 OS 버전, 기준 저장소, LOCK 자산, 변경 절차를 확인합니다.",
     status: "LOCKED",
   },
   {
     icon: "⚖️",
     title: "Constitution",
-    href: "/docs/constitution",
+    href: "/constitution-center",
     desc: "생활백서맘 브랜드, 리니, 네이버 V4, Google 분리 원칙을 고정합니다.",
     status: "LOCKED",
   },
