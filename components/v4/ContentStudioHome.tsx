@@ -3,7 +3,7 @@ import { Box, SeoBadge, Shell, WriteButton } from "./UsableLayout";
 
 export default function ContentStudioHome() {
   return (
-    <Shell title="글쓰기" desc="네이버와 Google 버튼을 구분하고, SEO 등급 기준으로 추천합니다.">
+    <Shell title="글쓰기" desc="네이버와 Google을 반드시 분리해서 작성합니다.">
       <Box title="바로 작성 후보">
         <div className="space-y-2">
           {recommended.map((r) => (
@@ -25,6 +25,17 @@ export default function ContentStudioHome() {
           ))}
         </div>
       </Box>
+
+      <div className="mt-4">
+        <Box title="작성 순서">
+          <div className="grid gap-2 md:grid-cols-4">
+            <div className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">1. 네이버 작성</div>
+            <div className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">2. Google 작성</div>
+            <div className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">3. 이미지 제작</div>
+            <div className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">4. 발행완료</div>
+          </div>
+        </Box>
+      </div>
     </Shell>
   );
 }
