@@ -1,12 +1,9 @@
-// Project020 Patch03
-// Naver Content Engine V3 compatibility bridge.
-// 실제 네이버 원클릭 기준은 Naver Engine V4입니다.
+// Compatibility bridge.
+// 실제 네이버 원클릭 기준은 Project024 Naver Engine V4입니다.
 
 import {
   NAVER_V4_VERSION,
   NAVER_V4_COUPANG_DISCLOSURE,
-  NAVER_V4_FORBIDDEN_OUTPUT,
-  NAVER_V4_STRUCTURE,
   buildNaverV4Prompt,
   buildNaverV4RulesText,
 } from "./naverEngineV4";
@@ -14,8 +11,6 @@ import {
 export {
   NAVER_V4_VERSION,
   NAVER_V4_COUPANG_DISCLOSURE,
-  NAVER_V4_FORBIDDEN_OUTPUT,
-  NAVER_V4_STRUCTURE,
   buildNaverV4Prompt,
   buildNaverV4RulesText,
 };

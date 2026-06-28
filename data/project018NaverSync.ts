@@ -1,12 +1,9 @@
-// Project020 Patch03
-// Project018 compatibility bridge.
-// 기존 Project018 참조는 모두 Naver Engine V4로 연결합니다.
+// Compatibility bridge.
+// 과거 Project018 참조는 모두 Project024 Naver Engine V4 규칙으로 연결합니다.
 
 import {
   NAVER_V4_VERSION,
   NAVER_V4_COUPANG_DISCLOSURE,
-  NAVER_V4_FORBIDDEN_OUTPUT,
-  NAVER_V4_STRUCTURE,
   buildNaverV4Prompt,
   buildNaverV4RulesText,
 } from "./naverEngineV4";
@@ -14,8 +11,6 @@ import {
 export {
   NAVER_V4_VERSION,
   NAVER_V4_COUPANG_DISCLOSURE,
-  NAVER_V4_FORBIDDEN_OUTPUT,
-  NAVER_V4_STRUCTURE,
   buildNaverV4Prompt,
   buildNaverV4RulesText,
 };
