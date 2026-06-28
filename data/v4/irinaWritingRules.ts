@@ -4,9 +4,18 @@ import { buildVoiceEngineText } from "./lifebookmomVoiceEngine";
 import { buildSeoEngineText } from "./lifebookmomSeoEngine";
 
 export const irinaWritingRules = {
-  project: "Project033",
-  title: "이리나 글쓰기 요청문 v3",
+  project: "Project033.1",
+  title: "이리나 글쓰기 요청문 v3.1",
   locked: true,
+
+  // 기존 화면 호환용 fixed. 절대 삭제 금지.
+  fixed: [
+    ...lifebookmomConstitution.rules,
+    ...lifebookmomStyleBook.seoTopicRule,
+    ...lifebookmomStyleBook.voice,
+    ...lifebookmomStyleBook.spacing,
+  ],
+
   naver: {
     title: "네이버 작성",
     output: lifebookmomStyleBook.requiredFlow,
@@ -15,6 +24,9 @@ export const irinaWritingRules = {
       "네이버용 글에는 Google 제목/본문을 포함하지 않는다.",
       "생활백서맘 Voice Engine을 반드시 따른다.",
       "생활백서맘 Style Book을 반드시 따른다.",
+      "요조체처럼 다정하고 부드럽게 쓴다.",
+      "옆집 엄마가 실제 경험을 이야기하듯 쓴다.",
+      "정보력은 유지하되 설명체가 아니라 대화체로 쓴다.",
       "별점·점수는 출력하지 않는다.",
       "쿠팡 고지문은 마지막 한 줄에만 넣는다.",
     ],

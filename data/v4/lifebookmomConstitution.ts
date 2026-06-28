@@ -1,6 +1,6 @@
 export const lifebookmomConstitution = {
-  project: "Project033",
-  version: "LOCK v1.0",
+  project: "Project033.1",
+  version: "LOCK v1.1",
   title: "생활백서맘 헌법",
   lock: true,
   rules: [

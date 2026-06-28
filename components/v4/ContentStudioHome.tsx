@@ -19,6 +19,7 @@ export default function ContentStudioHome() {
 
   const currentRules = useMemo(() => getModeRules(mode), [mode]);
   const prompt = useMemo(() => buildIrinaPrompt(topic, mode), [topic, mode]);
+  const fixedRules = irinaWritingRules.fixed ?? [];
 
   const copyAndOpen = async () => {
     await navigator.clipboard.writeText(prompt);
@@ -62,8 +63,8 @@ export default function ContentStudioHome() {
 
           <div className="rounded-xl bg-[#EFF8F2] p-3">
             <p className="text-xs font-black text-[#2F6B4F]">절대 변경 금지 규칙</p>
-            <div className="mt-2 space-y-1">
-              {irinaWritingRules.fixed.map((rule) => (
+            <div className="mt-2 max-h-64 space-y-1 overflow-y-auto">
+              {fixedRules.map((rule) => (
                 <p key={rule} className="text-xs font-bold text-[#2F6B4F]">✓ {rule}</p>
               ))}
             </div>

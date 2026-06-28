@@ -1,5 +1,5 @@
 export const lifebookmomSeoEngine = {
-  project: "Project033",
+  project: "Project033.1",
   title: "SEO 5등급 추천 엔진",
   lock: true,
   grades: [

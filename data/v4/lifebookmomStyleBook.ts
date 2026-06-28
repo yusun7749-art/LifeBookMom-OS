@@ -1,5 +1,5 @@
 export const lifebookmomStyleBook = {
-  project: "Project033",
+  project: "Project033.1",
   title: "생활백서맘 Style Book",
   lock: true,
 
