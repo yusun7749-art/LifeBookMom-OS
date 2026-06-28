@@ -1,12 +1,13 @@
 export const erpMeta = {
-  project: "Project029",
+  project: "Project033",
   title: "생활백서맘 운영본부",
-  subtitle: "실제 발행 원본 제목과 이미지 규칙을 고정 관리합니다.",
-  version: "운영체제 v2.9.0",
+  subtitle: "LOCK 규칙이 실제 글쓰기 요청문에 자동 포함됩니다.",
+  version: "운영체제 v3.3.0",
 };
 
 export const menu = [
   { title: "운영본부", href: "/enterprise" },
+  { title: "OS LOCK", href: "/os-lock" },
   { title: "일괄작성", href: "/batch-board" },
   { title: "콘텐츠검색", href: "/cms-search" },
   { title: "이미지규칙", href: "/image-guard" },
@@ -34,9 +35,9 @@ export const blocked = [
 ];
 
 export const stats = [
+  { title: "OS LOCK", value: "적용", link: "/os-lock" },
   { title: "원본 제목", value: published.length, link: "/cms-search" },
   { title: "이미지 재검토", value: 1, link: "/image-guard" },
-  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
   { title: "일괄 작성", value: "0/20", link: "/batch-board" },
 ];
 

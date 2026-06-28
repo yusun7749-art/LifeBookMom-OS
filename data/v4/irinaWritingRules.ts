@@ -1,26 +1,20 @@
+import { lifebookmomConstitution } from "./lifebookmomConstitution";
+import { lifebookmomStyleBook } from "./lifebookmomStyleBook";
+import { buildVoiceEngineText } from "./lifebookmomVoiceEngine";
+import { buildSeoEngineText } from "./lifebookmomSeoEngine";
+
 export const irinaWritingRules = {
-  project: "Project028.1",
-  title: "이리나 자동 글쓰기 연결",
+  project: "Project033",
+  title: "이리나 글쓰기 요청문 v3",
   locked: true,
   naver: {
     title: "네이버 작성",
-    output: [
-      "제목 1개",
-      "공감 도입",
-      "본문",
-      "부모 체크리스트",
-      "이미지 삽입 위치",
-      "생활백서맘 추천 아이템",
-      "마무리",
-      "자주 묻는 질문 5개",
-      "해시태그 30개 한 줄",
-      "쿠팡파트너스 고지문 한 줄",
-    ],
+    output: lifebookmomStyleBook.requiredFlow,
     rules: [
       "바로 복붙 가능한 네이버 원고만 작성한다.",
       "네이버용 글에는 Google 제목/본문을 포함하지 않는다.",
-      "생활백서맘 엄마 말투로 쓴다.",
-      "AI 설명체, 공공기관 말투, 강의체를 금지한다.",
+      "생활백서맘 Voice Engine을 반드시 따른다.",
+      "생활백서맘 Style Book을 반드시 따른다.",
       "별점·점수는 출력하지 않는다.",
       "쿠팡 고지문은 마지막 한 줄에만 넣는다.",
     ],
@@ -56,15 +50,6 @@ export const irinaWritingRules = {
       "우측 하단 내부 배치",
     ],
   },
-  fixed: [
-    "브랜드명: 생활백서맘",
-    "공식 캐릭터: 리니",
-    "네이버와 Google은 항상 분리",
-    "중복 주제 추천 금지",
-    "연관 주제는 가능하되 말만 바꾼 중복은 금지",
-    "SEO S/A 등급 우선 추천",
-    "제목/본문/FAQ/추천상품/해시태그/쿠팡고지문 규칙 준수",
-  ],
 };
 
 export function getModeLabel(mode: string) {
@@ -91,11 +76,18 @@ export function buildIrinaPrompt(topic: string, mode: string) {
 주제: ${topic}
 작성 모드: ${getModeLabel(mode)}
 
-[절대 변경 금지 규칙]
-${irinaWritingRules.fixed.map((rule) => `- ${rule}`).join("\n")}
+[생활백서맘 헌법 LOCK]
+${lifebookmomConstitution.rules.map((rule) => `- ${rule}`).join("\n")}
+
+${buildSeoEngineText()}
+
+${buildVoiceEngineText()}
 
 [출력 순서]
 ${output.map((item) => `- ${item}`).join("\n")}
+
+[이미지 삽입 위치 LOCK]
+${lifebookmomStyleBook.imagePosition.map((item) => `- ${item}`).join("\n")}
 
 [이번 모드 규칙]
 ${current.rules.map((rule) => `- ${rule}`).join("\n")}
@@ -103,5 +95,6 @@ ${current.rules.map((rule) => `- ${rule}`).join("\n")}
 [중요]
 - "알겠습니다", "작성하겠습니다", "아래와 같이" 같은 안내 문구를 쓰지 않는다.
 - 시스템 설명, 선택지, 개발 설명을 출력하지 않는다.
-- 지금 바로 ${getModeLabel(mode)} 결과물을 완성한다.`;
+- 지금 바로 ${getModeLabel(mode)} 결과물을 완성한다.
+- 생활백서맘스럽지 않으면 출력하지 말고 처음부터 다시 작성한다.`;
 }
