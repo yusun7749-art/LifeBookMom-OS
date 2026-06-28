@@ -1,126 +1,84 @@
-import Link from "next/link";
-import {
-  blockedRecommendations,
-  checkDuplicateTopic,
-  contentMap,
-  makeWriteLink,
-  nextRecommendations,
-  publishedContents,
-} from "../../data/v4/contentBrain";
-import { OperatingShell, SectionBox } from "./OperatingLayout";
-
-function Badge({ value }: { value: string }) {
-  const color = value === "발행완료" || value === "낮음" ? "#2F6B4F" : value === "중간" ? "#B35C3D" : "#7A6B5B";
-  return <span className="rounded-full bg-white px-2 py-1 text-[11px] font-black" style={{ color }}>{value}</span>;
-}
-
-function WriteButton({ topic }: { topic: string }) {
-  return (
-    <Link href={makeWriteLink(topic)} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">
-      작성하기
-    </Link>
-  );
-}
+import { blocked, contentMap, duplicateCheck, recommended, published } from "../../data/v4/usableERP";
+import { Box, SearchButton, Shell, WriteButton } from "./UsableLayout";
 
 export default function ContentBrain() {
-  const sampleChecks = [
-    checkDuplicateTopic("초등학생 체취 변화"),
-    checkDuplicateTopic("초3 사춘기 신호"),
-    checkDuplicateTopic("초등학생 속옷 교체 시기"),
-  ];
-
+  const checks = ["초등학생 체취 변화", "초3 사춘기 신호", "초등학생 속옷 교체 시기"].map((q) => ({ q, results: duplicateCheck(q) }));
   return (
-    <OperatingShell title="🧠 콘텐츠 두뇌" subtitle="중복을 막고, 안 쓴 주제는 바로 작성으로 연결합니다.">
-      <section className="grid gap-4 xl:grid-cols-3">
-        <SectionBox title="⚠ 중복 추천 차단">
-          <div className="grid gap-3">
-            {sampleChecks.map((check) => (
-              <div key={check.input} className="rounded-2xl bg-[#FFFDF8] p-4">
+    <Shell title="콘텐츠 두뇌" desc="이미 쓴 글은 막고, 안 쓴 주제는 바로 작성합니다.">
+      <section className="grid gap-3 xl:grid-cols-3">
+        <Box title="중복 추천 차단">
+          <div className="space-y-2">
+            {checks.map((c) => (
+              <div key={c.q} className="rounded-xl bg-[#FFFDF8] p-3">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="font-black">{check.input}</p>
-                  {check.duplicate ? <Badge value="중복위험" /> : <WriteButton topic={check.input} />}
+                  <p className="font-black">{c.q}</p>
+                  {c.results.length ? <span className="text-xs font-black text-[#B35C3D]">중복위험</span> : <WriteButton title={c.q} />}
                 </div>
-                <p className="mt-1 text-xs font-bold text-[#B35C3D]">
-                  {check.duplicate ? "이미 작성한 글과 비슷합니다" : "작성 가능 후보입니다"}
-                </p>
-                {check.results.slice(0, 1).map((item) => (
-                  <p key={item.title} className="mt-2 rounded-xl bg-white p-2 text-xs text-[#7A6B5B]">
-                    {item.title} · 유사도 {item.similarity}%
-                  </p>
-                ))}
+                {c.results.slice(0,1).map((r) => <p key={r.id} className="mt-1 text-xs text-[#7A6B5B]">{r.title} · 유사도 {r.score}%</p>)}
               </div>
             ))}
           </div>
-        </SectionBox>
+        </Box>
 
-        <SectionBox title="➡ 다음에 쓰면 좋은 글">
-          <div className="grid gap-3">
-            {nextRecommendations.map((item) => (
-              <div key={item.title} className="rounded-2xl bg-[#EFF8F2] p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-black">{item.title}</p>
-                  <WriteButton topic={item.title} />
+        <Box title="다음에 쓰면 좋은 글">
+          <div className="space-y-2">
+            {recommended.map((r) => (
+              <div key={r.title} className="flex items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
+                <div>
+                  <p className="font-black">{r.title}</p>
+                  <p className="text-xs font-bold text-[#2F6B4F]">{r.reason}</p>
                 </div>
-                <p className="mt-2 text-xs font-bold text-[#2F6B4F]">{item.reason}</p>
-                <p className="mt-1 text-xs text-[#6F6255]">{item.relation}</p>
+                <WriteButton title={r.title} />
               </div>
             ))}
           </div>
-        </SectionBox>
+        </Box>
 
-        <SectionBox title="🚫 추천 제외">
+        <Box title="추천 제외">
           <div className="grid gap-2">
-            {blockedRecommendations.map((item) => (
-              <div key={item} className="rounded-xl bg-[#FFF4EF] p-3 text-xs font-bold text-[#9F3D2E]">{item}</div>
-            ))}
+            {blocked.map((b) => <div key={b.title} className="rounded-xl bg-[#FFF4EF] p-2 text-xs font-bold text-[#9F3D2E]">{b.title} · {b.reason}</div>)}
           </div>
-        </SectionBox>
+        </Box>
       </section>
 
-      <div className="mt-6">
-        <SectionBox title="🗺 콘텐츠 지도">
-          <div className="grid gap-4 md:grid-cols-3">
-            {contentMap.map((group) => (
-              <div key={group.group} className="rounded-2xl bg-[#FFFDF8] p-4">
-                <p className="text-xl font-black">{group.group}</p>
-                <p className="mt-3 text-sm font-black text-[#2F6B4F]">작성완료</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {group.done.map((item) => <span key={item} className="rounded-full bg-white px-2 py-1 text-xs font-bold">✅ {item}</span>)}
+      <div className="mt-4">
+        <Box title="콘텐츠 지도">
+          <div className="grid gap-3 md:grid-cols-3">
+            {contentMap.map((g) => (
+              <div key={g.group} className="rounded-xl bg-[#FFFDF8] p-3">
+                <p className="text-lg font-black">{g.group}</p>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {g.done.map((d) => <span key={d} className="rounded-full bg-white px-2 py-1 text-xs font-bold">✅ {d}</span>)}
                 </div>
-                <p className="mt-4 text-sm font-black text-[#B35C3D]">아직 안 쓴 주제</p>
-                <div className="mt-2 grid gap-2">
-                  {group.todo.map((item) => (
-                    <div key={item} className="flex items-center justify-between rounded-xl bg-white p-2">
-                      <span className="text-xs font-bold">□ {item}</span>
-                      <WriteButton topic={`초등학생 ${item}`} />
+                <div className="mt-2 space-y-1">
+                  {g.todo.map((t) => (
+                    <div key={t} className="flex items-center justify-between rounded-lg bg-white p-2">
+                      <span className="text-xs font-bold">□ {t}</span>
+                      <WriteButton title={`초등학생 ${t}`} />
                     </div>
                   ))}
                 </div>
               </div>
             ))}
           </div>
-        </SectionBox>
+        </Box>
       </div>
 
-      <div className="mt-6">
-        <SectionBox title="✅ 최근 작성한 글 5개">
-          <div className="grid gap-3">
-            {publishedContents.slice(0, 5).map((item) => (
-              <div key={item.title} className="rounded-2xl bg-[#FFFDF8] p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-black">{item.title}</p>
-                  <div className="flex gap-2">
-                    <Badge value={item.naver} />
-                    <Badge value={item.google} />
-                    <Badge value={item.image} />
-                  </div>
+      <div className="mt-4">
+        <Box title="최근 작성한 글">
+          <div className="grid gap-2">
+            {published.map((p) => (
+              <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#FFFDF8] p-3">
+                <div>
+                  <p className="font-black">{p.title}</p>
+                  <p className="text-xs text-[#7A6B5B]">{p.date} · {p.point}</p>
                 </div>
-                <p className="mt-1 text-xs font-bold text-[#7A6B5B]">{item.category} · {item.date} · {item.keywords.join(" · ")}</p>
+                <SearchButton query={p.keywords[0]} />
               </div>
             ))}
           </div>
-        </SectionBox>
+        </Box>
       </div>
-    </OperatingShell>
+    </Shell>
   );
 }

@@ -1,17 +1,25 @@
-import { naverChecklist } from "../../data/v4/lifebookmomOS";
-import { PageShell } from "./OSLayout";
+import { recommended } from "../../data/v4/usableERP";
+import { Box, Shell, WriteButton } from "./UsableLayout";
 
 export default function ContentStudioHome() {
   return (
-    <PageShell title="📝 글쓰기" subtitle="네이버·구글 글쓰기와 출력 검사를 관리합니다.">
-      <section className="rounded-[2rem] border border-[#E4D5BE] bg-white p-7">
-        <h2 className="text-3xl font-black">네이버 글쓰기 출력 기준</h2>
-        <div className="mt-5 grid gap-3 md:grid-cols-4">
-          {naverChecklist.map((item) => (
-            <div key={item} className="rounded-2xl bg-[#EFF8F2] p-4 font-bold text-[#2F6B4F]">{item}</div>
+    <Shell title="글쓰기" desc="다른 화면에서 넘어온 주제를 바로 작성하는 곳입니다.">
+      <Box title="바로 작성 후보">
+        <div className="space-y-2">
+          {recommended.map((r) => (
+            <div key={r.title} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
+              <div>
+                <p className="font-black">{r.title}</p>
+                <p className="text-xs text-[#2F6B4F]">네이버 / Google / 이미지로 이어질 주제</p>
+              </div>
+              <div className="flex gap-2">
+                <WriteButton title={r.title} mode="naver" />
+                <WriteButton title={r.title} mode="google" />
+              </div>
+            </div>
           ))}
         </div>
-      </section>
-    </PageShell>
+      </Box>
+    </Shell>
   );
 }

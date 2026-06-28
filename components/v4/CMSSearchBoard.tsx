@@ -1,19 +1,26 @@
-import { cmsSearchTabs } from "../../data/v4/operatingERP";
-import { OperatingShell, SectionBox } from "./OperatingLayout";
+import { published, recommended, blocked } from "../../data/v4/usableERP";
+import { Box, Shell, WriteButton, SearchButton } from "./UsableLayout";
 
 export default function CMSSearchBoard() {
   return (
-    <OperatingShell title="🔎 콘텐츠검색" subtitle="작성된 글, 작성예정 글, 중복 글, 추천 글을 한 곳에서 찾습니다.">
-      <SectionBox title="검색 기준">
-        <div className="grid gap-3 md:grid-cols-7">
-          {cmsSearchTabs.map((tab) => <div key={tab} className="rounded-2xl bg-[#EFF8F2] p-4 text-center font-black text-[#2F6B4F]">{tab}</div>)}
-        </div>
-      </SectionBox>
-      <div className="mt-8">
-        <SectionBox title="검색 예시: 초등학생">
-          <p className="rounded-2xl bg-[#FFFDF8] p-4 font-bold">다음 단계에서 실제 CMS 데이터와 연결합니다.</p>
-        </SectionBox>
-      </div>
-    </OperatingShell>
+    <Shell title="콘텐츠검색" desc="검색창 대신 빠른 버튼으로 작성됨, 중복, 추천을 바로 확인합니다.">
+      <section className="grid gap-4 xl:grid-cols-3">
+        <Box title="작성된 글">
+          <div className="space-y-2">
+            {published.map((p) => <div key={p.id} className="rounded-xl bg-[#FFFDF8] p-3"><p className="font-black">{p.title}</p><p className="text-xs text-[#7A6B5B]">{p.date} · {p.keywords.join(" · ")}</p><div className="mt-2"><SearchButton query={p.keywords[0]} /></div></div>)}
+          </div>
+        </Box>
+        <Box title="중복 위험">
+          <div className="space-y-2">
+            {blocked.map((b) => <div key={b.title} className="rounded-xl bg-[#FFF4EF] p-3 text-sm font-bold text-[#9F3D2E]">{b.title} · {b.reason}</div>)}
+          </div>
+        </Box>
+        <Box title="추천 글">
+          <div className="space-y-2">
+            {recommended.map((r) => <div key={r.title} className="flex items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3"><span className="font-bold">{r.title}</span><WriteButton title={r.title} /></div>)}
+          </div>
+        </Box>
+      </section>
+    </Shell>
   );
 }
