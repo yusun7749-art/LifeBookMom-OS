@@ -1,14 +1,9 @@
 import { originalPublishedTitles, draftQueueTitles } from "./cmsOriginalTitles";
 
-export const erpMeta = {
-  project: "Project036.4",
-  title: "생활백서맘 운영본부",
-  subtitle: "실제 발행 원본 제목과 클릭 가능한 작업 흐름으로 운영합니다.",
-  version: "운영체제 v3.6.4",
-};
+export const erpMeta = { project: "Project036.5", title: "생활백서맘 운영본부", subtitle: "전역 상태 저장으로 발행/중복/선택 주제가 모든 화면에 유지됩니다.", version: "운영체제 v3.6.5" };
 
 export const menu = [
-  { title: "운영본부", href: "/" },
+  { title: "운영본부", href: "/enterprise" },
   { title: "OS LOCK", href: "/os-lock" },
   { title: "일괄작성", href: "/batch-board" },
   { title: "콘텐츠검색", href: "/cms-search" },
@@ -21,54 +16,21 @@ export const menu = [
   { title: "운영현황", href: "/dashboard" },
 ];
 
-export const published = originalPublishedTitles.map((item) => ({
-  id: item.id,
-  date: item.date,
-  title: item.originalTitle,
-  group: item.platform,
-  naver: item.platform === "Naver" ? item.status : "분리관리",
-  google: item.platform === "Google" ? item.status : "분리관리",
-  image: "관리",
-  keywords: item.keywords,
-  point: item.project,
-}));
+export const published = originalPublishedTitles.map((item) => ({ id: item.id, date: item.date, title: item.originalTitle, group: item.platform, naver: item.platform === "Naver" ? item.status : "분리관리", google: item.platform === "Google" ? item.status : "분리관리", image: "관리", keywords: item.keywords, point: item.project }));
 
-export const recommended = draftQueueTitles.map((item) => ({
-  title: item.originalTitle,
-  group: item.platform,
-  reason: "미발행 후보입니다.",
-  relation: item.keywords.join(" → "),
-  seoGrade: "S",
-  duplicateRisk: "낮음",
-  status: "작성 추천",
-}));
+export const recommended = draftQueueTitles.map((item) => ({ title: item.originalTitle, group: item.platform, reason: "미발행 후보입니다.", relation: item.project, seoGrade: "S", duplicateRisk: "낮음", status: "작성 추천" }));
 
-export const blocked = originalPublishedTitles.map((item) => ({
-  title: item.originalTitle,
-  reason: "이미 발행/예약 내역에 있음",
-}));
+export const blocked = originalPublishedTitles.map((item) => ({ title: item.originalTitle, reason: "이미 발행완료" }));
 
 export const stats = [
   { title: "전체 발행", value: originalPublishedTitles.length, link: "/cms-search" },
   { title: "네이버", value: originalPublishedTitles.filter((x) => x.platform === "Naver").length, link: "/naver-board" },
   { title: "Google", value: originalPublishedTitles.filter((x) => x.platform === "Google").length, link: "/google-board" },
-  { title: "미발행 후보", value: draftQueueTitles.length, link: "/batch-board" },
+  { title: "미발행", value: draftQueueTitles.length, link: "/batch-board" },
 ];
 
-export const contentMap = [
-  { group: "성장/위생", done: ["체취", "속옷", "여드름"], todo: ["체육복", "샤워습관", "두피냄새", "발냄새"] },
-  { group: "디지털", done: ["SNS"], todo: ["단체채팅방", "계정보호", "스마트폰 규칙"] },
-  { group: "안전", done: ["물놀이", "유괴 예방"], todo: ["횡단보도", "장마철", "놀이터"] },
-];
-
-export const calendarItems = originalPublishedTitles.map((item) => ({
-  date: item.date,
-  title: item.originalTitle,
-  naver: item.platform === "Naver" ? item.status : "-",
-  google: item.platform === "Google" ? item.status : "-",
-  image: "관리",
-}));
-
+export const contentMap = [];
+export const calendarItems = originalPublishedTitles.map((item) => ({ date: item.date, title: item.originalTitle, naver: item.platform === "Naver" ? item.status : "-", google: item.platform === "Google" ? item.status : "-", image: "관리" }));
 export const progress = [];
 export const todayTasks = [];
 export const todayTopicCandidates = recommended;
@@ -81,12 +43,9 @@ export const cmsSearchTabs = ["작성됨", "중복", "추천", "네이버", "Goo
 
 export function duplicateCheck(query: string) {
   const q = query.replace(/\s+/g, "").toLowerCase();
-  return published
-    .map((p) => {
-      const titleHit = p.title.replace(/\s+/g, "").toLowerCase().includes(q) ? 70 : 0;
-      const keywordHit = p.keywords.reduce((s, k) => q.includes(k.toLowerCase()) ? s + 12 : s, 0);
-      return { ...p, score: Math.min(100, titleHit + keywordHit) };
-    })
-    .filter((p) => p.score >= 24)
-    .sort((a, b) => b.score - a.score);
+  return published.map((p) => {
+    const titleHit = p.title.replace(/\s+/g, "").toLowerCase().includes(q) ? 70 : 0;
+    const keywordHit = p.keywords.reduce((s, k) => q.includes(k.toLowerCase()) ? s + 12 : s, 0);
+    return { ...p, score: Math.min(100, titleHit + keywordHit) };
+  }).filter((p) => p.score >= 24).sort((a, b) => b.score - a.score);
 }

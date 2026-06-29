@@ -138,43 +138,13 @@ export function writeLink(title: string, mode: "naver" | "google" | "image") {
   return `/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`;
 }
 
+
 export const replacementQueue = [
-  {
-    title: "초등학생 운동 후 땀 관리와 옷 갈아입기 습관",
-    seoGrade: "S",
-    relation: "체취 → 운동 후 관리 → 생활습관",
-    duplicateRisk: "낮음",
-  },
-  {
-    title: "초등학생 여벌옷 준비, 학교생활에서 꼭 필요한 이유",
-    seoGrade: "A",
-    relation: "속옷 → 여벌옷 → 학교생활",
-    duplicateRisk: "낮음",
-  },
-  {
-    title: "초등학생 발 냄새 관리, 양말과 운동화 습관부터 시작해요",
-    seoGrade: "S",
-    relation: "체취 → 발 냄새 → 양말/운동화",
-    duplicateRisk: "낮음",
-  },
-  {
-    title: "초등학생 손 씻기 습관, 감염병 예방의 첫걸음",
-    seoGrade: "S",
-    relation: "위생 → 손 씻기 → 감염 예방",
-    duplicateRisk: "낮음",
-  },
-  {
-    title: "초등학생 물병 위생관리, 매일 씻어야 하는 이유",
-    seoGrade: "A",
-    relation: "학교생활 → 물병 → 위생",
-    duplicateRisk: "낮음",
-  },
-  {
-    title: "초등학생 수건 따로 쓰기, 가족 위생 습관 만들기",
-    seoGrade: "A",
-    relation: "위생 → 수건 → 가족 생활습관",
-    duplicateRisk: "낮음",
-  },
+  { title: "초등학생 운동 후 땀 관리와 옷 갈아입기 습관", seoGrade: "S", relation: "체취 → 운동 후 관리 → 생활습관", duplicateRisk: "낮음" },
+  { title: "초등학생 여벌옷 준비, 학교생활에서 꼭 필요한 이유", seoGrade: "A", relation: "속옷 → 여벌옷 → 학교생활", duplicateRisk: "낮음" },
+  { title: "초등학생 발 냄새 관리, 양말과 운동화 습관부터 시작해요", seoGrade: "S", relation: "체취 → 발 냄새 → 양말/운동화", duplicateRisk: "낮음" },
+  { title: "초등학생 손 씻기 습관, 감염병 예방의 첫걸음", seoGrade: "S", relation: "위생 → 손 씻기 → 감염 예방", duplicateRisk: "낮음" },
+  { title: "초등학생 물병 위생관리, 매일 씻어야 하는 이유", seoGrade: "A", relation: "학교생활 → 물병 → 위생", duplicateRisk: "낮음" },
 ];
 
 export const taskLabels = {

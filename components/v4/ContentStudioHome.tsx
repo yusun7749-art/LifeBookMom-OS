@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { recommended } from "../../data/v4/usableERP";
 import { buildIrinaPrompt, getModeLabel, getModeRules, irinaWritingRules } from "../../data/v4/irinaWritingRules";
+import { buildImagePrompt } from "../../data/v4/imageGuardV2";
+import { readOperationStore, setSelectedTopic } from "../../data/v4/operationStore";
 import { Box, SeoBadge, Shell, WriteButton } from "./UsableLayout";
 
 function useQueryParam(name: string) {
@@ -13,46 +15,48 @@ function useQueryParam(name: string) {
 export default function ContentStudioHome() {
   const topicFromUrl = useQueryParam("topic");
   const modeFromUrl = useQueryParam("mode") || "naver";
+  const storedTopic = typeof window !== "undefined" ? readOperationStore().selectedTopic : "";
 
-  const [topic, setTopic] = useState(topicFromUrl || recommended[0]?.title || "");
+  const [topic, setTopic] = useState(topicFromUrl || storedTopic || recommended[0]?.title || "");
   const [mode, setMode] = useState(modeFromUrl);
 
+  useEffect(() => {
+    if (topicFromUrl) {
+      setTopic(topicFromUrl);
+      setSelectedTopic(topicFromUrl);
+    }
+  }, [topicFromUrl]);
+
   const currentRules = useMemo(() => getModeRules(mode), [mode]);
-  const prompt = useMemo(() => buildIrinaPrompt(topic, mode), [topic, mode]);
+  const prompt = useMemo(() => mode === "image" ? buildImagePrompt(topic) : buildIrinaPrompt(topic, mode), [topic, mode]);
   const fixedRules = irinaWritingRules.fixed ?? [];
 
+  const changeTopic = (value: string) => {
+    setTopic(value);
+    setSelectedTopic(value);
+  };
+
   const copyAndOpen = async () => {
+    setSelectedTopic(topic);
     await navigator.clipboard.writeText(prompt);
     window.open("https://chatgpt.com/", "_blank", "noopener,noreferrer");
   };
 
   return (
-    <Shell title="글쓰기" desc="작성 버튼은 글쓰기 명령을 복사하고 이리나를 엽니다. 열린 창에서 Ctrl+V만 누르면 됩니다.">
+    <Shell title="글쓰기" desc="운영본부에서 선택한 주제가 그대로 들어갑니다. 열린 창에서 Ctrl+V만 누르면 됩니다.">
       <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-black">{getModeLabel(mode)}</h2>
-            <p className="mt-1 text-xs font-bold text-[#6F6255]">
-              주제와 규칙이 자동으로 들어간 이리나 글쓰기 명령입니다.
-            </p>
+            <p className="mt-1 text-xs font-bold text-[#6F6255]">주제와 규칙이 자동으로 들어간 이리나 글쓰기 명령입니다.</p>
           </div>
-          <button
-            type="button"
-            onClick={copyAndOpen}
-            className="rounded-xl bg-[#1F1A16] px-4 py-3 text-xs font-black text-white"
-          >
-            복사하고 이리나 열기
-          </button>
+          <button type="button" onClick={copyAndOpen} className="rounded-xl bg-[#1F1A16] px-4 py-3 text-xs font-black text-white">복사하고 이리나 열기</button>
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
           <div className="rounded-xl bg-[#FFFDF8] p-3">
             <p className="text-xs font-black text-[#7A6B5B]">현재 주제</p>
-            <input
-              value={topic}
-              onChange={(event) => setTopic(event.target.value)}
-              className="mt-2 w-full rounded-xl border border-[#E4D5BE] px-3 py-3 text-sm font-bold outline-none"
-            />
+            <input value={topic} onChange={(event) => changeTopic(event.target.value)} className="mt-2 w-full rounded-xl border border-[#E4D5BE] px-3 py-3 text-sm font-bold outline-none" />
 
             <div className="mt-3 flex flex-wrap gap-2">
               <button type="button" onClick={() => setMode("naver")} className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "naver" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}>네이버 작성</button>
@@ -64,9 +68,7 @@ export default function ContentStudioHome() {
           <div className="rounded-xl bg-[#EFF8F2] p-3">
             <p className="text-xs font-black text-[#2F6B4F]">절대 변경 금지 규칙</p>
             <div className="mt-2 max-h-64 space-y-1 overflow-y-auto">
-              {fixedRules.map((rule) => (
-                <p key={rule} className="text-xs font-bold text-[#2F6B4F]">✓ {rule}</p>
-              ))}
+              {fixedRules.map((rule) => <p key={rule} className="text-xs font-bold text-[#2F6B4F]">✓ {rule}</p>)}
             </div>
           </div>
         </div>
@@ -75,30 +77,20 @@ export default function ContentStudioHome() {
       <div className="mt-4 grid gap-4 xl:grid-cols-2">
         <Box title="이번 모드 출력 순서">
           <div className="grid gap-2">
-            {"output" in currentRules ? currentRules.output.map((item) => (
-              <div key={item} className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">{item}</div>
-            )) : (
-              <div className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">이미지 프롬프트</div>
-            )}
+            {"output" in currentRules ? currentRules.output.map((item) => <div key={item} className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">{item}</div>) : <div className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">이미지 프롬프트</div>}
           </div>
         </Box>
 
         <Box title="이번 모드 규칙">
           <div className="grid gap-2">
-            {currentRules.rules.map((item) => (
-              <div key={item} className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">{item}</div>
-            ))}
+            {currentRules.rules.map((item) => <div key={item} className="rounded-xl bg-[#FFFDF8] p-3 text-sm font-bold">{item}</div>)}
           </div>
         </Box>
       </div>
 
       <div className="mt-4">
         <Box title="이리나에게 자동으로 복사될 문구">
-          <textarea
-            value={prompt}
-            readOnly
-            className="h-72 w-full rounded-xl border border-[#E4D5BE] bg-[#FFFDF8] p-4 text-sm font-bold leading-6 outline-none"
-          />
+          <textarea value={prompt} readOnly className="h-72 w-full rounded-xl border border-[#E4D5BE] bg-[#FFFDF8] p-4 text-sm font-bold leading-6 outline-none" />
         </Box>
       </div>
 
@@ -117,6 +109,7 @@ export default function ContentStudioHome() {
                 <div className="flex gap-2">
                   <WriteButton title={r.title} mode="naver" />
                   <WriteButton title={r.title} mode="google" />
+                  <WriteButton title={r.title} mode="image" />
                 </div>
               </div>
             ))}

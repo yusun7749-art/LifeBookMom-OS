@@ -3,20 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { batchQueue, dailyTargets, nightBatchMeta, replacementQueue, taskLabels, writeLink } from "../../data/v4/nightBatchERP";
+import { markTask, setRowState } from "../../data/v4/operationStore";
+import { useOperationStoreState } from "./useOperationStore";
 import { Shell } from "./UsableLayout";
 
 type TaskKey = "naver" | "google" | "image" | "publish";
 type RowState = "active" | "published" | "duplicate";
-type Row = {
-  slot: string;
-  title: string;
-  seoGrade: string;
-  relation: string;
-  duplicateRisk: string;
-  replaced?: boolean;
-  state?: RowState;
-};
-type DoneMap = Record<string, Partial<Record<TaskKey, boolean>>>;
+type Row = { slot: string; title: string; seoGrade: string; relation: string; duplicateRisk: string; replaced?: boolean };
 
 const taskKeys: TaskKey[] = ["naver", "google", "image", "publish"];
 
@@ -29,49 +22,47 @@ function makeReplacement(used: string[], nextIndex: number): Row {
     relation: r.relation,
     duplicateRisk: r.duplicateRisk,
     replaced: true,
-    state: "active",
   };
 }
 
 export default function BatchBoard() {
-  const [rows, setRows] = useState<Row[]>(batchQueue.map((r) => ({ ...r, state: "active" as RowState })));
-  const [done, setDone] = useState<DoneMap>({});
+  const store = useOperationStoreState();
+  const [extraRows, setExtraRows] = useState<Row[]>([]);
+  const rows: Row[] = [...batchQueue, ...extraRows];
+
+  const getState = (slot: string): RowState => store.rowState[slot] ?? "active";
 
   const summary = useMemo(() => {
-    const active = rows.filter((r) => r.state === "active");
-    const count = (key: TaskKey) => active.filter((r) => done[r.slot]?.[key]).length;
+    const activeRows = rows.filter((r) => getState(r.slot) === "active");
+    const count = (key: TaskKey) => activeRows.filter((r) => store.done[r.slot]?.[key]).length;
 
     return [
       { label: "네이버 작성", current: count("naver"), target: dailyTargets.naver },
       { label: "Google 작성", current: count("google"), target: dailyTargets.google },
       { label: "이미지 제작", current: count("image"), target: dailyTargets.image },
-      { label: "예약/발행 준비", current: rows.filter((r) => r.state === "published").length, target: dailyTargets.publish },
+      { label: "예약/발행 준비", current: store.publishedTitles.length, target: dailyTargets.publish },
     ];
-  }, [done, rows]);
+  }, [store, rows]);
 
-  const mark = (slot: string, key: TaskKey) => {
-    setDone((p) => ({ ...p, [slot]: { ...(p[slot] ?? {}), [key]: true } }));
-  };
+  const finishRow = (slot: string, title: string, state: "published" | "duplicate") => {
+    setRowState(slot, title, state);
 
-  const finishRow = (slot: string, state: "published" | "duplicate") => {
-    setRows((prev) => {
-      const next = prev.map((x) => (x.slot === slot ? { ...x, state } : x));
-      const activeCount = next.filter((x) => x.state === "active").length;
-      if (activeCount >= batchQueue.length) return next;
-      const used = next.map((x) => x.title);
-      return [...next, makeReplacement(used, next.length)];
+    setExtraRows((prev) => {
+      const visibleRows = [...batchQueue, ...prev];
+      const used = visibleRows.map((x) => x.title);
+      const activeCount = visibleRows.filter((x) => (store.rowState[x.slot] ?? "active") === "active" && x.slot !== slot).length;
+      if (activeCount >= batchQueue.length) return prev;
+      return [...prev, makeReplacement(used, visibleRows.length)];
     });
   };
 
   return (
-    <Shell title="야간 일괄 작성" desc="체크 후 발행완료 / 중복을 누르면 색상과 카운트가 바로 반영됩니다.">
+    <Shell title="야간 일괄 작성" desc="체크와 발행완료 상태가 저장되어 다른 화면에 갔다 와도 유지됩니다.">
       <section className="grid gap-3 md:grid-cols-4">
         {summary.map((item) => (
           <div key={item.label} className="rounded-2xl bg-white p-4">
             <p className="font-black">{item.label}</p>
-            <p className="mt-1 text-2xl font-black text-[#2F6B4F]">
-              {item.current} / {item.target}
-            </p>
+            <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{item.current} / {item.target}</p>
           </div>
         ))}
       </section>
@@ -81,28 +72,17 @@ export default function BatchBoard() {
 
         <div className="mt-4 space-y-2">
           {rows.map((item) => {
-            const rowDone = done[item.slot] ?? {};
-            const isDone = item.state !== "active";
-            const rowColor =
-              item.state === "published"
-                ? "bg-[#E8F6EE]"
-                : item.state === "duplicate"
-                  ? "bg-[#EFEFEF]"
-                  : "bg-[#FFFDF8]";
-            const label =
-              item.state === "published"
-                ? "발행완료"
-                : item.state === "duplicate"
-                  ? "중복제외"
-                  : item.replaced
-                    ? "대체투입"
-                    : "";
+            const rowDone = store.done[item.slot] ?? {};
+            const state = getState(item.slot);
+            const isDone = state !== "active";
+            const rowColor = state === "published" ? "bg-[#E8F6EE]" : state === "duplicate" ? "bg-[#EFEFEF]" : "bg-[#FFFDF8]";
+            const label = state === "published" ? "발행완료" : state === "duplicate" ? "중복제외" : item.replaced ? "대체투입" : "";
 
             return (
               <div key={`${item.slot}-${item.title}`} className={`grid gap-3 rounded-2xl p-3 xl:grid-cols-[70px_1fr_390px] ${rowColor}`}>
                 <div>
                   <div className="text-2xl font-black text-[#2F6B4F]">{item.slot}</div>
-                  {label ? <div className={`mt-1 text-xs font-black ${item.state === "published" ? "text-[#D22222]" : "text-[#777]"}`}>{label}</div> : null}
+                  {label ? <div className={`mt-1 text-xs font-black ${state === "published" ? "text-[#D22222]" : "text-[#777]"}`}>{label}</div> : null}
                 </div>
 
                 <div>
@@ -113,7 +93,7 @@ export default function BatchBoard() {
                     <div className="mt-2 flex flex-wrap gap-2">
                       {taskKeys.filter((k) => !rowDone[k]).map((k) => (
                         <label key={k} className="flex items-center gap-2 rounded-lg bg-white px-2 py-1 text-[11px] font-bold">
-                          <input type="checkbox" className="h-3 w-3" onChange={() => mark(item.slot, k)} />
+                          <input type="checkbox" className="h-3 w-3" onChange={() => markTask(item.slot, k)} />
                           {taskLabels[k]}
                         </label>
                       ))}
@@ -127,8 +107,8 @@ export default function BatchBoard() {
                       <Link href={writeLink(item.title, "naver")} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">네이버</Link>
                       <Link href={writeLink(item.title, "google")} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-[#1F1A16]">Google</Link>
                       <Link href={writeLink(item.title, "image")} className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]">이미지</Link>
-                      <button onClick={() => finishRow(item.slot, "published")} className="rounded-xl bg-[#FFE8E8] px-3 py-2 text-xs font-black text-[#D22222]">✅ 발행완료</button>
-                      <button onClick={() => finishRow(item.slot, "duplicate")} className="rounded-xl bg-[#FFF4EF] px-3 py-2 text-xs font-black text-[#9F3D2E]">⚠️ 중복</button>
+                      <button onClick={() => finishRow(item.slot, item.title, "published")} className="rounded-xl bg-[#FFE8E8] px-3 py-2 text-xs font-black text-[#D22222]">✅ 발행완료</button>
+                      <button onClick={() => finishRow(item.slot, item.title, "duplicate")} className="rounded-xl bg-[#FFF4EF] px-3 py-2 text-xs font-black text-[#9F3D2E]">⚠️ 중복</button>
                     </>
                   ) : null}
                 </div>
