@@ -1,26 +1,45 @@
 import { originalPublishedTitles, draftQueueTitles } from "./cmsOriginalTitles";
 
-export const erpMeta = { project: "Project036.5", title: "생활백서맘 운영본부", subtitle: "전역 상태 저장으로 발행/중복/선택 주제가 모든 화면에 유지됩니다.", version: "운영체제 v3.6.5" };
+export const erpMeta = {
+  project: "Project037",
+  title: "생활백서맘 Revenue OS",
+  subtitle: "애드센스 승인 · 애드포스트 승인 · 유입 · 수익을 먼저 보는 운영본부",
+  version: "수익운영체제 v3.7",
+};
 
 export const menu = [
-  { title: "운영본부", href: "/enterprise" },
-  { title: "OS LOCK", href: "/os-lock" },
-  { title: "일괄작성", href: "/batch-board" },
-  { title: "콘텐츠검색", href: "/cms-search" },
-  { title: "이미지규칙", href: "/image-guard" },
-  { title: "콘텐츠두뇌", href: "/content-brain" },
-  { title: "발행달력", href: "/planner" },
-  { title: "주제찾기", href: "/ideas" },
-  { title: "네이버", href: "/naver-board" },
-  { title: "Google", href: "/google-board" },
-  { title: "운영현황", href: "/dashboard" },
+  { title: "운영본부", href: "/enterprise", group: "daily" },
+  { title: "오늘작성", href: "/batch-board", group: "daily" },
+  { title: "주제찾기", href: "/ideas", group: "daily" },
+  { title: "글쓰기", href: "/content-studio", group: "daily" },
+  { title: "발행관리", href: "/planner", group: "daily" },
+  { title: "데이터센터", href: "/dashboard", group: "growth" },
+  { title: "승인센터", href: "/approval-center", group: "growth" },
+  { title: "설정", href: "/os-lock", group: "setting" },
 ];
 
-export const published = originalPublishedTitles.map((item) => ({ id: item.id, date: item.date, title: item.originalTitle, group: item.platform, naver: item.platform === "Naver" ? item.status : "분리관리", google: item.platform === "Google" ? item.status : "분리관리", image: "관리", keywords: item.keywords, point: item.project }));
+export const revenueCategories = [
+  { title: "유입형", desc: "수족구·로블록스·장마처럼 검색으로 방문자를 데려오는 글", score: "★★★★★" },
+  { title: "승인형", desc: "FAQ·표·체크리스트·내부링크로 사이트 신뢰를 올리는 글", score: "★★★★★" },
+  { title: "수익형", desc: "교육·보험·정부지원·쿠팡 제품으로 자연스럽게 연결되는 글", score: "★★★★☆" },
+];
 
-export const recommended = draftQueueTitles.map((item) => ({ title: item.originalTitle, group: item.platform, reason: "미발행 후보입니다.", relation: item.project, seoGrade: "S", duplicateRisk: "낮음", status: "작성 추천" }));
+export const approvalChecklist = [
+  { label: "About 소개 페이지", status: "점검필요", priority: "상" },
+  { label: "Contact 문의 페이지", status: "점검필요", priority: "상" },
+  { label: "개인정보처리방침", status: "점검필요", priority: "상" },
+  { label: "내부링크 2~5개", status: "강화필요", priority: "상" },
+  { label: "FAQ·표·체크리스트", status: "강화필요", priority: "상" },
+  { label: "검색형 제목", status: "즉시적용", priority: "상" },
+  { label: "네이버/Google 원고 차별화", status: "유지", priority: "중" },
+  { label: "이미지 최적화", status: "점검필요", priority: "중" },
+];
 
-export const blocked = originalPublishedTitles.map((item) => ({ title: item.originalTitle, reason: "이미 발행완료" }));
+export const trafficWinners = [
+  { title: "수족구 걸리면 학교 보내도 될까요?", percent: "7%", next: "수족구 격리기간 · 음식 · 형제전염 · 소독법" },
+  { title: "로블록스 자녀보호설정", percent: "상승", next: "친구추가 · 채팅차단 · 결제차단 · 계정보호" },
+  { title: "초등학생 거짓말", percent: "관심", next: "혼내기 전 확인할 원인 · 대화법" },
+];
 
 export const stats = [
   { title: "전체 발행", value: originalPublishedTitles.length, link: "/cms-search" },
@@ -29,13 +48,37 @@ export const stats = [
   { title: "미발행", value: draftQueueTitles.length, link: "/batch-board" },
 ];
 
+export const published = originalPublishedTitles.map((item) => ({
+  id: item.id,
+  date: item.date,
+  title: item.originalTitle,
+  group: item.platform,
+  naver: item.platform === "Naver" ? item.status : "분리관리",
+  google: item.platform === "Google" ? item.status : "분리관리",
+  image: "관리",
+  keywords: item.keywords,
+  point: item.project,
+}));
+
+export const recommended = draftQueueTitles.map((item) => ({
+  title: item.originalTitle,
+  group: item.platform,
+  reason: "미발행 후보입니다.",
+  relation: item.project,
+  seoGrade: "S",
+  duplicateRisk: "낮음",
+  status: "작성 추천",
+}));
+
+export const blocked = originalPublishedTitles.map((item) => ({ title: item.originalTitle, reason: "이미 발행완료" }));
+
 export const contentMap = [];
 export const calendarItems = originalPublishedTitles.map((item) => ({ date: item.date, title: item.originalTitle, naver: item.platform === "Naver" ? item.status : "-", google: item.platform === "Google" ? item.status : "-", image: "관리" }));
 export const progress = [];
 export const todayTasks = [];
 export const todayTopicCandidates = recommended;
 export const plannerDays = [];
-export const ideaCategories = ["성장", "생활", "건강", "안전", "디지털"];
+export const ideaCategories = ["유입형", "승인형", "수익형", "건강", "교육", "생활"];
 export const keywordIdeas = recommended.map((item) => item.title);
 export const platformStatus = [];
 export const publishFlow = ["네이버 작성", "Google 작성", "이미지", "예약/발행완료"];
