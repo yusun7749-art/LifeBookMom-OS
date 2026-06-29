@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { batchQueue, dailyTargets, nightBatchMeta, replacementQueue, taskLabels, writeLink } from "../../data/v4/nightBatchERP";
-import { markTask, setRowState } from "../../data/v4/operationStore";
+import { markTask, setRowState, setSelectedTopic } from "../../data/v4/operationStore";
 import { useOperationStoreState } from "./useOperationStore";
 import { Shell } from "./UsableLayout";
 
@@ -25,9 +25,21 @@ function makeReplacement(used: string[], nextIndex: number): Row {
   };
 }
 
+function makeManualRow(title: string, nextIndex: number): Row {
+  return {
+    slot: String(nextIndex + 1).padStart(2, "0"),
+    title,
+    seoGrade: "S",
+    relation: "직접 입력 주제",
+    duplicateRisk: "직접 확인",
+    replaced: true,
+  };
+}
+
 export default function BatchBoard() {
   const store = useOperationStoreState();
   const [extraRows, setExtraRows] = useState<Row[]>([]);
+  const [manualTitle, setManualTitle] = useState("");
   const rows: Row[] = [...batchQueue, ...extraRows];
 
   const getState = (slot: string): RowState => store.rowState[slot] ?? "active";
@@ -44,6 +56,18 @@ export default function BatchBoard() {
     ];
   }, [store, rows]);
 
+  const addManualTitle = () => {
+    const title = manualTitle.trim();
+    if (!title) {
+      alert("추가할 제목을 입력하세요.");
+      return;
+    }
+
+    setSelectedTopic(title);
+    setExtraRows((prev) => [...prev, makeManualRow(title, batchQueue.length + prev.length)]);
+    setManualTitle("");
+  };
+
   const finishRow = (slot: string, title: string, state: "published" | "duplicate") => {
     setRowState(slot, title, state);
 
@@ -57,7 +81,7 @@ export default function BatchBoard() {
   };
 
   return (
-    <Shell title="야간 일괄 작성" desc="체크와 발행완료 상태가 저장되어 다른 화면에 갔다 와도 유지됩니다.">
+    <Shell title="야간 일괄 작성" desc="직접 제목을 추가하고, 체크와 발행완료 상태가 저장됩니다.">
       <section className="grid gap-3 md:grid-cols-4">
         {summary.map((item) => (
           <div key={item.label} className="rounded-2xl bg-white p-4">
@@ -65,6 +89,21 @@ export default function BatchBoard() {
             <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{item.current} / {item.target}</p>
           </div>
         ))}
+      </section>
+
+      <section className="mt-4 rounded-2xl border border-[#E4D5BE] bg-white p-4">
+        <h2 className="text-xl font-black">직접 작성한 제목 추가</h2>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <input
+            value={manualTitle}
+            onChange={(event) => setManualTitle(event.target.value)}
+            placeholder="예: 초등학생 발 냄새 관리, 양말과 운동화 습관부터 시작해요"
+            className="min-w-[320px] flex-1 rounded-xl border border-[#E4D5BE] px-4 py-3 text-sm font-bold outline-none"
+          />
+          <button type="button" onClick={addManualTitle} className="rounded-xl bg-[#1F1A16] px-4 py-2 text-xs font-black text-white">
+            일괄작성에 추가
+          </button>
+        </div>
       </section>
 
       <section className="mt-4 rounded-2xl border border-[#E4D5BE] bg-white p-4">
@@ -104,9 +143,9 @@ export default function BatchBoard() {
                 <div className="flex flex-wrap items-start justify-end gap-2">
                   {!isDone ? (
                     <>
-                      <Link href={writeLink(item.title, "naver")} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">네이버</Link>
-                      <Link href={writeLink(item.title, "google")} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-[#1F1A16]">Google</Link>
-                      <Link href={writeLink(item.title, "image")} className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]">이미지</Link>
+                      <Link href={writeLink(item.title, "naver")} onClick={() => setSelectedTopic(item.title)} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">네이버</Link>
+                      <Link href={writeLink(item.title, "google")} onClick={() => setSelectedTopic(item.title)} className="rounded-xl bg-white px-3 py-2 text-xs font-black text-[#1F1A16]">Google</Link>
+                      <Link href={writeLink(item.title, "image")} onClick={() => setSelectedTopic(item.title)} className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]">이미지</Link>
                       <button onClick={() => finishRow(item.slot, item.title, "published")} className="rounded-xl bg-[#FFE8E8] px-3 py-2 text-xs font-black text-[#D22222]">✅ 발행완료</button>
                       <button onClick={() => finishRow(item.slot, item.title, "duplicate")} className="rounded-xl bg-[#FFF4EF] px-3 py-2 text-xs font-black text-[#9F3D2E]">⚠️ 중복</button>
                     </>

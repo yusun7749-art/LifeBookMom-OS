@@ -20,21 +20,22 @@ export default function OriginalTitleBulkBoard({
 }) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [manualTitle, setManualTitle] = useState("");
   const items = useMemo(() => findOriginalTitles(query, platform), [query, platform]);
 
   const toggle = (itemTitle: string) => {
     setSelected((prev) => prev.includes(itemTitle) ? prev.filter((x) => x !== itemTitle) : [...prev, itemTitle]);
   };
 
-  const runSelected = async (mode: "naver" | "google" | "image") => {
-    if (selected.length === 0) {
-      alert("날짜 앞 체크박스를 먼저 선택하세요.");
+  const runTitles = async (titles: string[], mode: "naver" | "google" | "image") => {
+    if (titles.length === 0) {
+      alert("날짜 앞 체크박스를 선택하거나 직접 제목을 입력하세요.");
       return;
     }
 
-    setSelectedTopic(selected[0]);
+    setSelectedTopic(titles[0]);
 
-    const text = selected
+    const text = titles
       .map((itemTitle) => (mode === "image" ? buildImagePrompt(itemTitle) : buildIrinaPrompt(itemTitle, mode)))
       .join("\n\n--- 다음 제목 ---\n\n");
 
@@ -42,10 +43,36 @@ export default function OriginalTitleBulkBoard({
     window.open("https://chatgpt.com/", "_blank", "noopener,noreferrer");
   };
 
+  const runSelected = (mode: "naver" | "google" | "image") => runTitles(selected, mode);
+
+  const runManual = (mode: "naver" | "google" | "image") => {
+    const title = manualTitle.trim();
+    if (!title) {
+      alert("직접 작성한 제목을 먼저 입력하세요.");
+      return;
+    }
+    runTitles([title], mode);
+  };
+
   return (
     <Shell title={title} desc={desc}>
       <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
-        <div className="flex gap-2">
+        <div className="rounded-2xl bg-[#FFFDF8] p-3">
+          <p className="text-sm font-black">직접 작성한 제목 입력</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <input
+              value={manualTitle}
+              onChange={(event) => setManualTitle(event.target.value)}
+              placeholder="예: 초등학생 발 냄새 관리, 양말과 운동화 습관부터 시작해요"
+              className="min-w-[320px] flex-1 rounded-xl border border-[#E4D5BE] px-4 py-3 text-sm font-bold outline-none"
+            />
+            <button type="button" onClick={() => runManual("naver")} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">네이버 작성</button>
+            <button type="button" onClick={() => runManual("google")} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">Google 작성</button>
+            <button type="button" onClick={() => runManual("image")} className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]">이미지 제작</button>
+          </div>
+        </div>
+
+        <div className="mt-4 flex gap-2">
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="원본 제목 검색" className="flex-1 rounded-xl border border-[#E4D5BE] px-4 py-3 text-sm font-bold outline-none" />
           <button type="button" onClick={() => { setQuery(""); setSelected([]); }} className="rounded-xl bg-[#1F1A16] px-4 py-2 text-xs font-black text-white">초기화</button>
         </div>
