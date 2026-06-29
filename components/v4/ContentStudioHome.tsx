@@ -19,6 +19,7 @@ export default function ContentStudioHome() {
 
   const [topic, setTopic] = useState(topicFromUrl || storedTopic || recommended[0]?.title || "");
   const [mode, setMode] = useState(modeFromUrl);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     if (topicFromUrl) {
@@ -30,6 +31,12 @@ export default function ContentStudioHome() {
   const currentRules = useMemo(() => getModeRules(mode), [mode]);
   const prompt = useMemo(() => mode === "image" ? buildImagePrompt(topic) : buildIrinaPrompt(topic, mode), [topic, mode]);
   const fixedRules = irinaWritingRules.fixed ?? [];
+
+  const filteredRecommendations = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return recommended;
+    return recommended.filter((r) => [r.title, r.reason, r.relation].join(" ").toLowerCase().includes(q));
+  }, [search]);
 
   const changeTopic = (value: string) => {
     setTopic(value);
@@ -43,12 +50,12 @@ export default function ContentStudioHome() {
   };
 
   return (
-    <Shell title="글쓰기" desc="운영본부에서 선택한 주제가 그대로 들어갑니다. 열린 창에서 Ctrl+V만 누르면 됩니다.">
+    <Shell title="글쓰기" desc="직접 입력하거나 추천 주제를 선택해 네이버·Google·이미지 명령을 복사합니다.">
       <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-black">{getModeLabel(mode)}</h2>
-            <p className="mt-1 text-xs font-bold text-[#6F6255]">주제와 규칙이 자동으로 들어간 이리나 글쓰기 명령입니다.</p>
+            <p className="mt-1 text-xs font-bold text-[#6F6255]">현재 주제는 저장되어 다른 화면에서도 이어집니다.</p>
           </div>
           <button type="button" onClick={copyAndOpen} className="rounded-xl bg-[#1F1A16] px-4 py-3 text-xs font-black text-white">복사하고 이리나 열기</button>
         </div>
@@ -95,9 +102,10 @@ export default function ContentStudioHome() {
       </div>
 
       <div className="mt-4">
-        <Box title="다른 추천 주제">
-          <div className="space-y-2">
-            {recommended.map((r) => (
+        <Box title={`추천 주제 ${filteredRecommendations.length}개`}>
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="수족구, 로블록스, 학교폭력, 위생 검색" className="mb-3 w-full rounded-xl border border-[#E4D5BE] px-4 py-3 text-sm font-bold outline-none" />
+          <div className="max-h-[620px] space-y-2 overflow-y-auto">
+            {filteredRecommendations.map((r) => (
               <div key={r.title} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">

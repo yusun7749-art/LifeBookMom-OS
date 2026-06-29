@@ -19,10 +19,11 @@ export type OperationStoreState = {
   rowState: Record<string, BatchRowState>;
   publishedTitles: string[];
   duplicateTitles: string[];
+  hiddenTopicTitles: string[];
   manualTitles: ManualTitleItem[];
 };
 
-const STORE_KEY = "lifebookmom.project0365.store";
+const STORE_KEY = "lifebookmom.project037.store";
 
 export const defaultOperationStore: OperationStoreState = {
   selectedTopic: "",
@@ -30,6 +31,7 @@ export const defaultOperationStore: OperationStoreState = {
   rowState: {},
   publishedTitles: [],
   duplicateTitles: [],
+  hiddenTopicTitles: [],
   manualTitles: [],
 };
 
@@ -81,11 +83,7 @@ export function registerManualTitle(title: string, source: "직접입력" | "주
           ...prev.manualTitles,
         ];
 
-    return {
-      ...prev,
-      selectedTopic: clean,
-      manualTitles,
-    };
+    return { ...prev, selectedTopic: clean, manualTitles };
   });
 }
 
@@ -94,10 +92,7 @@ export function markTask(slot: string, key: WorkTaskKey, value = true) {
     ...prev,
     done: {
       ...prev.done,
-      [slot]: {
-        ...(prev.done[slot] ?? {}),
-        [key]: value,
-      },
+      [slot]: { ...(prev.done[slot] ?? {}), [key]: value },
     },
   }));
 }
@@ -107,22 +102,35 @@ export function setRowState(slot: string, title: string, state: BatchRowState) {
     const publishedTitles = state === "published"
       ? Array.from(new Set([...prev.publishedTitles, title]))
       : prev.publishedTitles;
-
     const duplicateTitles = state === "duplicate"
       ? Array.from(new Set([...prev.duplicateTitles, title]))
       : prev.duplicateTitles;
+    const hiddenTopicTitles = Array.from(new Set([...prev.hiddenTopicTitles, title]));
 
     return {
       ...prev,
       rowState: { ...prev.rowState, [slot]: state },
       publishedTitles,
       duplicateTitles,
+      hiddenTopicTitles,
       done: {
         ...prev.done,
         [slot]: { ...(prev.done[slot] ?? {}), publish: state === "published" ? true : prev.done[slot]?.publish },
       },
     };
   });
+}
+
+export function markTopicHidden(title: string, state: "published" | "duplicate") {
+  const clean = title.trim();
+  if (!clean) return readOperationStore();
+
+  return updateOperationStore((prev) => ({
+    ...prev,
+    hiddenTopicTitles: Array.from(new Set([...prev.hiddenTopicTitles, clean])),
+    publishedTitles: state === "published" ? Array.from(new Set([...prev.publishedTitles, clean])) : prev.publishedTitles,
+    duplicateTitles: state === "duplicate" ? Array.from(new Set([...prev.duplicateTitles, clean])) : prev.duplicateTitles,
+  }));
 }
 
 export function clearOperationStore() {

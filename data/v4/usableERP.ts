@@ -1,4 +1,4 @@
-import { originalPublishedTitles, draftQueueTitles } from "./cmsOriginalTitles";
+import { originalPublishedTitles, draftQueueTitles, viewTopTitles } from "./cmsOriginalTitles";
 
 export const erpMeta = {
   project: "Project037",
@@ -35,11 +35,11 @@ export const approvalChecklist = [
   { label: "이미지 최적화", status: "점검필요", priority: "중" },
 ];
 
-export const trafficWinners = [
-  { title: "수족구 걸리면 학교 보내도 될까요?", percent: "7%", next: "수족구 격리기간 · 음식 · 형제전염 · 소독법" },
-  { title: "로블록스 자녀보호설정", percent: "상승", next: "친구추가 · 채팅차단 · 결제차단 · 계정보호" },
-  { title: "초등학생 거짓말", percent: "관심", next: "혼내기 전 확인할 원인 · 대화법" },
-];
+export const trafficWinners = viewTopTitles.map((item) => ({
+  title: item.originalTitle,
+  percent: `${item.viewCount ?? 0}회`,
+  next: item.project,
+}));
 
 export const stats = [
   { title: "전체 발행", value: originalPublishedTitles.length, link: "/cms-search" },
@@ -60,7 +60,20 @@ export const published = originalPublishedTitles.map((item) => ({
   point: item.project,
 }));
 
-export const recommended = draftQueueTitles.map((item) => ({
+const revenueRecommendations = [
+  { title: "수족구 형제자매 전염 막는 집안 소독과 생활수칙", relation: "수족구 → 소독 → 위생용품", seoGrade: "S", reason: "실제 유입 1위 수족구 확장글입니다.", duplicateRisk: "낮음" },
+  { title: "수족구 격리기간은 며칠일까요? 부모가 확인할 등교 기준", relation: "수족구 → 격리기간 → 등교", seoGrade: "S", reason: "수족구 검색어를 더 깊게 확장합니다.", duplicateRisk: "낮음" },
+  { title: "로블록스 자녀보호설정, 부모가 꼭 확인해야 할 7가지", relation: "로블록스 → 보호설정 → 디지털안전", seoGrade: "S", reason: "실제 유입 상위 로블록스 확장글입니다.", duplicateRisk: "낮음" },
+  { title: "로블록스 결제 차단과 채팅 제한, 초등학생 계정보호 설정법", relation: "로블록스 → 결제차단 → 계정보호", seoGrade: "A", reason: "부모 검색 의도가 명확합니다.", duplicateRisk: "낮음" },
+  { title: "초등학생 학교폭력 초기 신호, 부모가 가장 먼저 확인할 행동", relation: "친구관계 → 학교폭력 → 부모대처", seoGrade: "S", reason: "검색 유입과 승인 신뢰도를 동시에 보강합니다.", duplicateRisk: "낮음" },
+  { title: "학교에서 친구를 때린 아이, 혼내기 전에 확인해야 할 원인", relation: "행동문제 → 친구갈등 → 부모대화", seoGrade: "S", reason: "주제찾기 오류를 대체하는 실제 검색형 제목입니다.", duplicateRisk: "낮음" },
+  { title: "초등학생 장염 증상과 등교 기준, 수족구와 헷갈릴 때 확인할 점", relation: "장염 → 등교기준 → 감염병", seoGrade: "A", reason: "감염병 클러스터를 확장합니다.", duplicateRisk: "낮음" },
+  { title: "초등학생 스마트폰 가족 규칙, 부모가 처음 정해야 할 5가지", relation: "스마트폰 → 가족규칙 → 디지털안전", seoGrade: "A", reason: "디지털 카테고리 유입 확장형입니다.", duplicateRisk: "낮음" },
+  { title: "초등학생 시력 저하 막는 책상 조명과 독서 습관", relation: "시력 → 스탠드 → 독서환경", seoGrade: "A", reason: "쿠팡 추천템 연결이 자연스럽습니다.", duplicateRisk: "낮음" },
+  { title: "초등학생 여름철 물병 위생관리, 매일 씻어야 하는 이유", relation: "위생 → 물병 → 학교생활", seoGrade: "A", reason: "승인형 생활정보와 수익 연결이 모두 가능합니다.", duplicateRisk: "낮음" },
+];
+
+export const recommended = [...revenueRecommendations, ...draftQueueTitles.map((item) => ({
   title: item.originalTitle,
   group: item.platform,
   reason: "미발행 후보입니다.",
@@ -68,6 +81,10 @@ export const recommended = draftQueueTitles.map((item) => ({
   seoGrade: "S",
   duplicateRisk: "낮음",
   status: "작성 추천",
+}))].map((item) => ({
+  group: "Revenue",
+  status: "작성 추천",
+  ...item,
 }));
 
 export const blocked = originalPublishedTitles.map((item) => ({ title: item.originalTitle, reason: "이미 발행완료" }));
