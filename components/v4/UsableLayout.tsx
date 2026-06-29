@@ -56,7 +56,6 @@ export function Shell({ title, desc, children }: { title: string; desc: string; 
                 <h1 className="mt-1 text-2xl font-black">{title}</h1>
                 <p className="mt-1 text-sm font-bold text-[#F7F1E8]">{desc}</p>
               </div>
-
               <div className="flex flex-wrap gap-2">
                 <Link href="/enterprise" className="rounded-xl bg-[#DFF1E7] px-3 py-2 text-xs font-black text-[#1F1A16]">처음화면</Link>
                 <a href={irinaLink.href} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]">이리나 연결</a>
@@ -78,22 +77,11 @@ export function Shell({ title, desc, children }: { title: string; desc: string; 
 }
 
 export function Box({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
-      <h2 className="text-xl font-black">{title}</h2>
-      <div className="mt-3">{children}</div>
-    </section>
-  );
+  return <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4"><h2 className="text-xl font-black">{title}</h2><div className="mt-3">{children}</div></section>;
 }
 
 export function SmallCard({ title, value, desc, href }: { title: string; value?: string | number; desc?: string; href?: string }) {
-  const inner = (
-    <div className="rounded-2xl bg-[#FFFDF8] p-4">
-      <p className="font-black">{title}</p>
-      {value !== undefined && <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{value}</p>}
-      {desc && <p className="mt-1 text-xs font-bold text-[#6F6255]">{desc}</p>}
-    </div>
-  );
+  const inner = <div className="rounded-2xl bg-[#FFFDF8] p-4"><p className="font-black">{title}</p>{value !== undefined && <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{value}</p>}{desc && <p className="mt-1 text-xs font-bold text-[#6F6255]">{desc}</p>}</div>;
   return href ? <Link href={href}>{inner}</Link> : inner;
 }
 
@@ -104,11 +92,7 @@ export function SeoBadge({ grade }: { grade?: string }) {
 export function WriteButton({ title, mode }: { title: string; mode: "naver" | "google" | "image" }) {
   const label = mode === "naver" ? "네이버" : mode === "google" ? "Google" : "이미지";
   return (
-    <Link
-      href={`/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`}
-      onClick={() => setSelectedTopic(title)}
-      className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "image" ? "bg-[#FFE8F1] text-[#1F1A16]" : "bg-[#1F1A16] text-white"}`}
-    >
+    <Link href={`/content-studio?topic=${encodeURIComponent(title)}&mode=${mode}`} onClick={() => setSelectedTopic(title)} className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "image" ? "bg-[#FFE8F1] text-[#1F1A16]" : "bg-[#1F1A16] text-white"}`}>
       {label}
     </Link>
   );

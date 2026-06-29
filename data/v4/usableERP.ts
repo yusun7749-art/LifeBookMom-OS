@@ -8,18 +8,18 @@ export const erpMeta = {
 };
 
 export const menu = [
-  { title: "운영본부", href: "/enterprise", group: "daily" },
-  { title: "오늘작성", href: "/batch-board", group: "daily" },
-  { title: "주제찾기", href: "/ideas", group: "daily" },
-  { title: "글쓰기", href: "/content-studio", group: "daily" },
-  { title: "발행관리", href: "/planner", group: "daily" },
-  { title: "데이터센터", href: "/dashboard", group: "growth" },
-  { title: "승인센터", href: "/approval-center", group: "growth" },
-  { title: "설정", href: "/os-lock", group: "setting" },
+  { title: "운영본부", href: "/enterprise" },
+  { title: "오늘작성", href: "/batch-board" },
+  { title: "주제찾기", href: "/ideas" },
+  { title: "글쓰기", href: "/content-studio" },
+  { title: "발행관리", href: "/planner" },
+  { title: "데이터센터", href: "/dashboard" },
+  { title: "승인센터", href: "/approval-center" },
+  { title: "설정", href: "/os-lock" },
 ];
 
 export const revenueCategories = [
-  { title: "유입형", desc: "수족구·로블록스·장마처럼 검색으로 방문자를 데려오는 글", score: "★★★★★" },
+  { title: "유입형", desc: "수족구·로블록스·장마처럼 실제 검색으로 방문자를 데려오는 글", score: "★★★★★" },
   { title: "승인형", desc: "FAQ·표·체크리스트·내부링크로 사이트 신뢰를 올리는 글", score: "★★★★★" },
   { title: "수익형", desc: "교육·보험·정부지원·쿠팡 제품으로 자연스럽게 연결되는 글", score: "★★★★☆" },
 ];
