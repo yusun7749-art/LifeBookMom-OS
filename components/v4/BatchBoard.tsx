@@ -7,7 +7,15 @@ import { Shell } from "./UsableLayout";
 
 type TaskKey = "naver" | "google" | "image" | "publish";
 type RowState = "active" | "published" | "duplicate";
-type Row = { slot: string; title: string; seoGrade: string; relation: string; duplicateRisk: string; replaced?: boolean; state?: RowState };
+type Row = {
+  slot: string;
+  title: string;
+  seoGrade: string;
+  relation: string;
+  duplicateRisk: string;
+  replaced?: boolean;
+  state?: RowState;
+};
 type DoneMap = Record<string, Partial<Record<TaskKey, boolean>>>;
 
 const taskKeys: TaskKey[] = ["naver", "google", "image", "publish"];
@@ -32,11 +40,12 @@ export default function BatchBoard() {
   const summary = useMemo(() => {
     const active = rows.filter((r) => r.state === "active");
     const count = (key: TaskKey) => active.filter((r) => done[r.slot]?.[key]).length;
+
     return [
       { label: "네이버 작성", current: count("naver"), target: dailyTargets.naver },
       { label: "Google 작성", current: count("google"), target: dailyTargets.google },
       { label: "이미지 제작", current: count("image"), target: dailyTargets.image },
-      { label: "발행완료", current: rows.filter((r) => r.state === "published").length, target: rows.length },
+      { label: "예약/발행 준비", current: rows.filter((r) => r.state === "published").length, target: dailyTargets.publish },
     ];
   }, [done, rows]);
 
@@ -50,18 +59,19 @@ export default function BatchBoard() {
       const activeCount = next.filter((x) => x.state === "active").length;
       if (activeCount >= batchQueue.length) return next;
       const used = next.map((x) => x.title);
-      const newRow = makeReplacement(used, next.length);
-      return [...next, newRow];
+      return [...next, makeReplacement(used, next.length)];
     });
   };
 
   return (
-    <Shell title="야간 일괄 작성" desc="체크 후 ✅ 발행완료 / ⚠️ 중복을 누르면 색상과 카운트가 바로 반영됩니다.">
+    <Shell title="야간 일괄 작성" desc="체크 후 발행완료 / 중복을 누르면 색상과 카운트가 바로 반영됩니다.">
       <section className="grid gap-3 md:grid-cols-4">
         {summary.map((item) => (
           <div key={item.label} className="rounded-2xl bg-white p-4">
             <p className="font-black">{item.label}</p>
-            <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{item.current} / {item.target}</p>
+            <p className="mt-1 text-2xl font-black text-[#2F6B4F]">
+              {item.current} / {item.target}
+            </p>
           </div>
         ))}
       </section>
@@ -73,8 +83,20 @@ export default function BatchBoard() {
           {rows.map((item) => {
             const rowDone = done[item.slot] ?? {};
             const isDone = item.state !== "active";
-            const rowColor = item.state === "published" ? "bg-[#E8F6EE]" : item.state === "duplicate" ? "bg-[#EFEFEF]" : "bg-[#FFFDF8]";
-            const label = item.state === "published" ? "발행완료" : item.state === "duplicate" ? "중복제외" : item.replaced ? "대체투입" : "";
+            const rowColor =
+              item.state === "published"
+                ? "bg-[#E8F6EE]"
+                : item.state === "duplicate"
+                  ? "bg-[#EFEFEF]"
+                  : "bg-[#FFFDF8]";
+            const label =
+              item.state === "published"
+                ? "발행완료"
+                : item.state === "duplicate"
+                  ? "중복제외"
+                  : item.replaced
+                    ? "대체투입"
+                    : "";
 
             return (
               <div key={`${item.slot}-${item.title}`} className={`grid gap-3 rounded-2xl p-3 xl:grid-cols-[70px_1fr_390px] ${rowColor}`}>
