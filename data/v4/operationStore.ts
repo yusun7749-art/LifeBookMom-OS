@@ -4,12 +4,22 @@ export type WorkMode = "naver" | "google" | "image";
 export type WorkTaskKey = "naver" | "google" | "image" | "publish";
 export type BatchRowState = "active" | "published" | "duplicate";
 
+export type ManualTitleItem = {
+  id: string;
+  date: string;
+  originalTitle: string;
+  platform: "Naver" | "Google" | "ALL";
+  status: "미발행" | "작성중" | "발행완료";
+  source: "직접입력" | "주제찾기";
+};
+
 export type OperationStoreState = {
   selectedTopic: string;
   done: Record<string, Partial<Record<WorkTaskKey, boolean>>>;
   rowState: Record<string, BatchRowState>;
   publishedTitles: string[];
   duplicateTitles: string[];
+  manualTitles: ManualTitleItem[];
 };
 
 const STORE_KEY = "lifebookmom.project0365.store";
@@ -20,6 +30,7 @@ export const defaultOperationStore: OperationStoreState = {
   rowState: {},
   publishedTitles: [],
   duplicateTitles: [],
+  manualTitles: [],
 };
 
 export function readOperationStore(): OperationStoreState {
@@ -48,6 +59,34 @@ export function updateOperationStore(updater: (prev: OperationStoreState) => Ope
 
 export function setSelectedTopic(topic: string) {
   return updateOperationStore((prev) => ({ ...prev, selectedTopic: topic }));
+}
+
+export function registerManualTitle(title: string, source: "직접입력" | "주제찾기" = "직접입력") {
+  const clean = title.trim();
+  if (!clean) return readOperationStore();
+
+  return updateOperationStore((prev) => {
+    const exists = prev.manualTitles.some((item) => item.originalTitle === clean);
+    const manualTitles = exists
+      ? prev.manualTitles
+      : [
+          {
+            id: `manual-${Date.now()}`,
+            date: "미발행",
+            originalTitle: clean,
+            platform: "ALL" as const,
+            status: "미발행" as const,
+            source,
+          },
+          ...prev.manualTitles,
+        ];
+
+    return {
+      ...prev,
+      selectedTopic: clean,
+      manualTitles,
+    };
+  });
 }
 
 export function markTask(slot: string, key: WorkTaskKey, value = true) {
