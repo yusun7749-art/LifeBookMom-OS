@@ -1,5 +1,5 @@
-import Dashboard from "../../components/v4/Dashboard";
+import OperationHome from "../../components/v4/OperationHome";
 
 export default function Page() {
-  return <Dashboard />;
+  return <OperationHome />;
 }

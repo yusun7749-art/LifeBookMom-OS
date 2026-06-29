@@ -1,14 +1,14 @@
 import { originalPublishedTitles, draftQueueTitles } from "./cmsOriginalTitles";
 
 export const erpMeta = {
-  project: "Project036 FULL",
+  project: "Project036.4",
   title: "생활백서맘 운영본부",
-  subtitle: "실제 발행 원본 제목 기준으로 운영합니다.",
-  version: "운영체제 v3.6 FULL",
+  subtitle: "실제 발행 원본 제목과 클릭 가능한 작업 흐름으로 운영합니다.",
+  version: "운영체제 v3.6.4",
 };
 
 export const menu = [
-  { title: "운영본부", href: "/enterprise" },
+  { title: "운영본부", href: "/" },
   { title: "OS LOCK", href: "/os-lock" },
   { title: "일괄작성", href: "/batch-board" },
   { title: "콘텐츠검색", href: "/cms-search" },
@@ -37,7 +37,7 @@ export const recommended = draftQueueTitles.map((item) => ({
   title: item.originalTitle,
   group: item.platform,
   reason: "미발행 후보입니다.",
-  relation: item.project,
+  relation: item.keywords.join(" → "),
   seoGrade: "S",
   duplicateRisk: "낮음",
   status: "작성 추천",
@@ -45,18 +45,30 @@ export const recommended = draftQueueTitles.map((item) => ({
 
 export const blocked = originalPublishedTitles.map((item) => ({
   title: item.originalTitle,
-  reason: "이미 발행완료",
+  reason: "이미 발행/예약 내역에 있음",
 }));
 
 export const stats = [
   { title: "전체 발행", value: originalPublishedTitles.length, link: "/cms-search" },
   { title: "네이버", value: originalPublishedTitles.filter((x) => x.platform === "Naver").length, link: "/naver-board" },
   { title: "Google", value: originalPublishedTitles.filter((x) => x.platform === "Google").length, link: "/google-board" },
-  { title: "미발행", value: draftQueueTitles.length, link: "/batch-board" },
+  { title: "미발행 후보", value: draftQueueTitles.length, link: "/batch-board" },
 ];
 
-export const contentMap = [];
-export const calendarItems = originalPublishedTitles.map((item) => ({ date: item.date, title: item.originalTitle, naver: item.platform === "Naver" ? item.status : "-", google: item.platform === "Google" ? item.status : "-", image: "관리" }));
+export const contentMap = [
+  { group: "성장/위생", done: ["체취", "속옷", "여드름"], todo: ["체육복", "샤워습관", "두피냄새", "발냄새"] },
+  { group: "디지털", done: ["SNS"], todo: ["단체채팅방", "계정보호", "스마트폰 규칙"] },
+  { group: "안전", done: ["물놀이", "유괴 예방"], todo: ["횡단보도", "장마철", "놀이터"] },
+];
+
+export const calendarItems = originalPublishedTitles.map((item) => ({
+  date: item.date,
+  title: item.originalTitle,
+  naver: item.platform === "Naver" ? item.status : "-",
+  google: item.platform === "Google" ? item.status : "-",
+  image: "관리",
+}));
+
 export const progress = [];
 export const todayTasks = [];
 export const todayTopicCandidates = recommended;
