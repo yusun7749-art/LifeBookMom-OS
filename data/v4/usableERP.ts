@@ -1,10 +1,10 @@
 import { originalPublishedTitles, draftQueueTitles } from "./cmsOriginalTitles";
 
 export const erpMeta = {
-  project: "Project035",
+  project: "Project036 FULL",
   title: "생활백서맘 운영본부",
-  subtitle: "실제 발행 원본 제목을 기준으로 작성·수정·재생성을 관리합니다.",
-  version: "운영체제 v3.5.0",
+  subtitle: "실제 발행 원본 제목 기준으로 운영합니다.",
+  version: "운영체제 v3.6 FULL",
 };
 
 export const menu = [
@@ -25,19 +25,19 @@ export const published = originalPublishedTitles.map((item) => ({
   id: item.id,
   date: item.date,
   title: item.originalTitle,
-  group: item.category,
-  naver: item.naver,
-  google: item.google,
-  image: item.image,
+  group: item.platform,
+  naver: item.platform === "Naver" ? item.status : "분리관리",
+  google: item.platform === "Google" ? item.status : "분리관리",
+  image: "관리",
   keywords: item.keywords,
-  point: item.category,
+  point: item.project,
 }));
 
 export const recommended = draftQueueTitles.map((item) => ({
   title: item.originalTitle,
-  group: item.category,
-  reason: "실제 발행 전 후보입니다. 발행완료 체크 전까지 추천 큐에 유지됩니다.",
-  relation: item.keywords.join(" → "),
+  group: item.platform,
+  reason: "미발행 후보입니다.",
+  relation: item.project,
   seoGrade: "S",
   duplicateRisk: "낮음",
   status: "작성 추천",
@@ -49,26 +49,14 @@ export const blocked = originalPublishedTitles.map((item) => ({
 }));
 
 export const stats = [
-  { title: "원본 제목", value: published.length, link: "/cms-search" },
-  { title: "미발행 후보", value: recommended.length, link: "/ideas" },
-  { title: "중복 차단", value: blocked.length, link: "/content-brain" },
-  { title: "일괄 작성", value: "0/20", link: "/batch-board" },
+  { title: "전체 발행", value: originalPublishedTitles.length, link: "/cms-search" },
+  { title: "네이버", value: originalPublishedTitles.filter((x) => x.platform === "Naver").length, link: "/naver-board" },
+  { title: "Google", value: originalPublishedTitles.filter((x) => x.platform === "Google").length, link: "/google-board" },
+  { title: "미발행", value: draftQueueTitles.length, link: "/batch-board" },
 ];
 
-export const contentMap = [
-  { group: "성장", done: ["체취", "사춘기", "여드름", "속옷 교체"], todo: ["샤워습관", "생리 준비", "키성장", "체육복 관리", "친구관계 변화"] },
-  { group: "디지털", done: ["SNS 안전"], todo: ["단체채팅방 예절", "스마트폰 가족규칙", "게임 시간"] },
-  { group: "안전", done: ["물놀이"], todo: ["횡단보도", "유괴 예방", "장마철 준비물"] },
-];
-
-export const calendarItems = originalPublishedTitles.map((item) => ({
-  date: item.date,
-  title: item.originalTitle,
-  naver: item.naver,
-  google: item.google,
-  image: item.image,
-}));
-
+export const contentMap = [];
+export const calendarItems = originalPublishedTitles.map((item) => ({ date: item.date, title: item.originalTitle, naver: item.platform === "Naver" ? item.status : "-", google: item.platform === "Google" ? item.status : "-", image: "관리" }));
 export const progress = [];
 export const todayTasks = [];
 export const todayTopicCandidates = recommended;
