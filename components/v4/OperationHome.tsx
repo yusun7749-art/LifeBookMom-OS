@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { recommended, stats } from "../../data/v4/usableERP";
-import { markTopicHidden, setSelectedTopic } from "../../data/v4/operationStore";
-import { useOperationStoreState } from "./useOperationStore";
+import { recommended } from "../../data/v4/usableERP";
+import { duplicateCmsTitle, publishCmsTitle } from "../../data/v4/cmsStore";
+import { setSelectedTopic } from "../../data/v4/operationStore";
+import { useCmsStore } from "./useCmsStore";
 import { Shell } from "./UsableLayout";
 
 const PAGE_SIZE = 10;
@@ -29,21 +30,28 @@ function shuffleWithSeed<T>(items: T[], seed: number) {
 export default function OperationHome() {
   const [query, setQuery] = useState("");
   const [seed, setSeed] = useState(0);
-  const store = useOperationStoreState();
+  const cmsItems = useCmsStore();
 
-  useEffect(() => {
-    setSeed(Date.now());
-  }, []);
+  useEffect(() => setSeed(Date.now()), []);
+
+  const unavailableTitles = useMemo(
+    () => new Set(cmsItems.filter((item) => item.status === "published" || item.status === "duplicate").map((item) => item.title)),
+    [cmsItems]
+  );
+
+  const stats = useMemo(() => ({
+    total: cmsItems.filter((item) => item.status === "published").length,
+    naver: cmsItems.filter((item) => item.status === "published" && item.platform === "Naver").length,
+    google: cmsItems.filter((item) => item.status === "published" && item.platform === "Google").length,
+    duplicate: cmsItems.filter((item) => item.status === "duplicate").length,
+  }), [cmsItems]);
 
   const baseRows = useMemo(() => {
     const q = query.trim().toLowerCase();
-
     return recommended
-      .filter((item) => !store.hiddenTopicTitles.includes(item.title))
-      .filter((item) => !store.publishedTitles.includes(item.title))
-      .filter((item) => !store.duplicateTitles.includes(item.title))
+      .filter((item) => !unavailableTitles.has(item.title))
       .filter((item) => !q || [item.title, item.group, item.relation, item.reason].join(" ").toLowerCase().includes(q));
-  }, [query, store.hiddenTopicTitles, store.publishedTitles, store.duplicateTitles]);
+  }, [query, unavailableTitles]);
 
   const rows = useMemo(() => {
     if (query.trim()) return baseRows.slice(0, PAGE_SIZE);
@@ -51,26 +59,23 @@ export default function OperationHome() {
   }, [baseRows, seed, query]);
 
   const refresh = () => setSeed(Date.now() + Math.floor(Math.random() * 999999));
-  const hide = (title: string, state: "published" | "duplicate") => markTopicHidden(title, state);
+  const publish = (title: string) => publishCmsTitle(title, "data-center", "ALL");
+  const duplicate = (title: string) => duplicateCmsTitle(title, "data-center");
 
   return (
-    <Shell title="데이터센터" desc="Revenue 추천주제는 10개만 표시하고, 새로고침이나 새 추천받기로 다른 후보를 보여줍니다.">
+    <Shell title="데이터센터" desc="CMS를 기준으로 추천·발행완료·중복을 통합 관리합니다.">
       <section className="grid gap-3 md:grid-cols-4">
-        {stats.map((s) => (
-          <Link key={s.title} href={s.link} className="rounded-2xl bg-white p-4">
-            <p className="font-black">{s.title}</p>
-            <p className="mt-1 text-2xl font-black text-[#2F6B4F]">{s.value}</p>
-          </Link>
-        ))}
+        <Link href="/planner" className="rounded-2xl bg-white p-4"><p className="font-black">전체 발행</p><p className="mt-1 text-2xl font-black text-[#2F6B4F]">{stats.total}</p></Link>
+        <Link href="/naver-board" className="rounded-2xl bg-white p-4"><p className="font-black">네이버</p><p className="mt-1 text-2xl font-black text-[#2F6B4F]">{stats.naver}</p></Link>
+        <Link href="/google-board" className="rounded-2xl bg-white p-4"><p className="font-black">Google</p><p className="mt-1 text-2xl font-black text-[#315C9D]">{stats.google}</p></Link>
+        <div className="rounded-2xl bg-white p-4"><p className="font-black">중복 제외</p><p className="mt-1 text-2xl font-black text-[#B35C3D]">{stats.duplicate}</p></div>
       </section>
 
       <section className="mt-4 rounded-2xl border border-[#E4D5BE] bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-black">오늘의 Revenue 추천주제 10개</h2>
-            <p className="mt-1 text-xs font-bold text-[#6F6255]">
-              전체 후보 {baseRows.length}개 · 현재 표시 {rows.length}개 · 발행 {store.publishedTitles.length} · 중복제외 {store.duplicateTitles.length}
-            </p>
+            <p className="mt-1 text-xs font-bold text-[#6F6255]">전체 후보 {baseRows.length}개 · 현재 표시 {rows.length}개</p>
           </div>
           <button onClick={refresh} className="rounded-xl bg-[#DFF1E7] px-4 py-2 text-xs font-black text-[#1F1A16]">새 추천받기</button>
         </div>
@@ -91,12 +96,13 @@ export default function OperationHome() {
                   <p className="mt-1 text-xs text-[#2F6B4F]">{item.reason}</p>
                 </div>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 <Link onClick={() => setSelectedTopic(item.title)} href={`/content-studio?topic=${encodeURIComponent(item.title)}&mode=naver`} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">네이버</Link>
                 <Link onClick={() => setSelectedTopic(item.title)} href={`/content-studio?topic=${encodeURIComponent(item.title)}&mode=google`} className="rounded-xl bg-[#1F1A16] px-3 py-2 text-xs font-black text-white">Google</Link>
                 <Link onClick={() => setSelectedTopic(item.title)} href={`/content-studio?topic=${encodeURIComponent(item.title)}&mode=image`} className="rounded-xl bg-[#FFE8F1] px-3 py-2 text-xs font-black text-[#1F1A16]">이미지</Link>
-                <button onClick={() => hide(item.title, "published")} className="rounded-xl bg-[#FFE8E8] px-3 py-2 text-xs font-black text-[#D22222]">✅ 발행완료</button>
-                <button onClick={() => hide(item.title, "duplicate")} className="rounded-xl bg-[#EFEFEF] px-3 py-2 text-xs font-black text-[#777]">⚠️ 중복</button>
+                <button onClick={() => publish(item.title)} className="rounded-xl bg-[#FFE8E8] px-3 py-2 text-xs font-black text-[#D22222]">✅ 발행완료</button>
+                <button onClick={() => duplicate(item.title)} className="rounded-xl bg-[#EFEFEF] px-3 py-2 text-xs font-black text-[#777]">⚠️ 중복</button>
               </div>
             </div>
           ))}
