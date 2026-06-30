@@ -1,30 +1,12 @@
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { recommended } from "../../data/v4/usableERP";
+import { getRevenueRecommendations } from "../../data/v4/revenueRecommendationEngine";
 import { buildIrinaPrompt, getModeLabel, getModeRules, irinaWritingRules } from "../../data/v4/irinaWritingRules";
 import { buildImagePrompt } from "../../data/v4/imageGuardV2";
 import { readOperationStore, setSelectedTopic } from "../../data/v4/operationStore";
 import { Box, SeoBadge, Shell, WriteButton } from "./UsableLayout";
-
-const PAGE_SIZE = 10;
-
-function shuffleWithSeed<T>(items: T[], seed: number) {
-  const arr = [...items];
-  let s = seed || Date.now();
-
-  const random = () => {
-    s = (s * 9301 + 49297) % 233280;
-    return s / 233280;
-  };
-
-  for (let i = arr.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-
-  return arr;
-}
 
 function useQueryParam(name: string) {
   if (typeof window === "undefined") return "";
@@ -35,13 +17,11 @@ export default function ContentStudioHome() {
   const topicFromUrl = useQueryParam("topic");
   const modeFromUrl = useQueryParam("mode") || "naver";
   const storedTopic = typeof window !== "undefined" ? readOperationStore().selectedTopic : "";
+  const firstTopic = typeof window !== "undefined" ? getRevenueRecommendations(1)[0]?.title : "";
 
-  const [topic, setTopic] = useState(topicFromUrl || storedTopic || recommended[0]?.title || "");
+  const [topic, setTopic] = useState(topicFromUrl || storedTopic || firstTopic || "");
   const [mode, setMode] = useState(modeFromUrl);
   const [search, setSearch] = useState("");
-  const [seed, setSeed] = useState(0);
-
-  useEffect(() => setSeed(Date.now()), []);
 
   useEffect(() => {
     if (topicFromUrl) {
@@ -55,17 +35,17 @@ export default function ContentStudioHome() {
   const fixedRules = irinaWritingRules.fixed ?? [];
 
   const filteredRecommendations = useMemo(() => {
+    if (typeof window === "undefined") return [];
+    const rows = getRevenueRecommendations(30);
     const q = search.trim().toLowerCase();
-    if (!q) return shuffleWithSeed(recommended, seed).slice(0, PAGE_SIZE);
-    return recommended.filter((r) => [r.title, r.reason, r.relation].join(" ").toLowerCase().includes(q)).slice(0, PAGE_SIZE);
-  }, [search, seed]);
+    if (!q) return rows.slice(0, 10);
+    return rows.filter((r) => [r.title, r.reason, r.relation, r.intentKey].join(" ").toLowerCase().includes(q)).slice(0, 10);
+  }, [search]);
 
   const changeTopic = (value: string) => {
     setTopic(value);
     setSelectedTopic(value);
   };
-
-  const refresh = () => setSeed(Date.now() + Math.floor(Math.random() * 999999));
 
   const copyAndOpen = async () => {
     setSelectedTopic(topic);
@@ -74,7 +54,7 @@ export default function ContentStudioHome() {
   };
 
   return (
-    <Shell title="글쓰기" desc="추천 주제는 10개만 표시하고, 새로고침이나 새 추천받기로 다른 후보를 보여줍니다.">
+    <Shell title="글쓰기" desc="Revenue 점수 기반 TOP10 주제를 선택하거나 직접 제목을 입력합니다.">
       <section className="rounded-2xl border border-[#E4D5BE] bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -94,6 +74,7 @@ export default function ContentStudioHome() {
               <button type="button" onClick={() => setMode("image")} className={`rounded-xl px-3 py-2 text-xs font-black ${mode === "image" ? "bg-[#1F1A16] text-white" : "bg-white text-[#1F1A16]"}`}>이미지 제작</button>
             </div>
           </div>
+
           <div className="rounded-xl bg-[#EFF8F2] p-3">
             <p className="text-xs font-black text-[#2F6B4F]">절대 변경 금지 규칙</p>
             <div className="mt-2 max-h-64 space-y-1 overflow-y-auto">
@@ -123,19 +104,17 @@ export default function ContentStudioHome() {
       </div>
 
       <div className="mt-4">
-        <Box title="추천 주제 10개">
-          <div className="mb-3 flex flex-wrap gap-2">
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="수족구, 로블록스, 학교폭력, 위생 검색" className="min-w-[300px] flex-1 rounded-xl border border-[#E4D5BE] px-4 py-3 text-sm font-bold outline-none" />
-            <button onClick={refresh} className="rounded-xl bg-[#DFF1E7] px-4 py-2 text-xs font-black text-[#1F1A16]">새 추천받기</button>
-          </div>
+        <Box title="Revenue 추천 TOP10">
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="수족구, 로블록스, 학교폭력, 위생 검색" className="mb-3 w-full rounded-xl border border-[#E4D5BE] px-4 py-3 text-sm font-bold outline-none" />
           <div className="space-y-2">
             {filteredRecommendations.map((r, index) => (
-              <div key={`${seed}-${r.title}`} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
+              <div key={`${r.intentKey}-${r.title}`} className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-[#EFF8F2] p-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-lg font-black text-[#2F6B4F]">{String(index + 1).padStart(2, "0")}</span>
                     <p className="font-black">{r.title}</p>
                     <SeoBadge grade={r.seoGrade} />
+                    <span className="rounded-full bg-white px-2 py-1 text-xs font-black text-[#B35C3D]">총점 {r.totalScore}</span>
                   </div>
                   <p className="mt-1 text-xs text-[#2F6B4F]">{r.reason}</p>
                 </div>

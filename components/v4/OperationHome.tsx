@@ -1,43 +1,22 @@
+
 "use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { recommended } from "../../data/v4/usableERP";
 import { duplicateCmsTitle, publishCmsTitle } from "../../data/v4/cmsStore";
+import { getRevenueRecommendations } from "../../data/v4/revenueRecommendationEngine";
 import { setSelectedTopic } from "../../data/v4/operationStore";
 import { useCmsStore } from "./useCmsStore";
 import { Shell } from "./UsableLayout";
 
-const PAGE_SIZE = 10;
-
-function shuffleWithSeed<T>(items: T[], seed: number) {
-  const arr = [...items];
-  let s = seed || Date.now();
-
-  const random = () => {
-    s = (s * 9301 + 49297) % 233280;
-    return s / 233280;
-  };
-
-  for (let i = arr.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-
-  return arr;
-}
-
 export default function OperationHome() {
   const [query, setQuery] = useState("");
-  const [seed, setSeed] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const cmsItems = useCmsStore();
 
-  useEffect(() => setSeed(Date.now()), []);
-
-  const unavailableTitles = useMemo(
-    () => new Set(cmsItems.filter((item) => item.status === "published" || item.status === "duplicate").map((item) => item.title)),
-    [cmsItems]
-  );
+  useEffect(() => {
+    setRefreshKey(Date.now());
+  }, []);
 
   const stats = useMemo(() => ({
     total: cmsItems.filter((item) => item.status === "published").length,
@@ -46,24 +25,22 @@ export default function OperationHome() {
     duplicate: cmsItems.filter((item) => item.status === "duplicate").length,
   }), [cmsItems]);
 
-  const baseRows = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return recommended
-      .filter((item) => !unavailableTitles.has(item.title))
-      .filter((item) => !q || [item.title, item.group, item.relation, item.reason].join(" ").toLowerCase().includes(q));
-  }, [query, unavailableTitles]);
+  const allRows = useMemo(() => getRevenueRecommendations(30), [cmsItems, refreshKey]);
 
   const rows = useMemo(() => {
-    if (query.trim()) return baseRows.slice(0, PAGE_SIZE);
-    return shuffleWithSeed(baseRows, seed).slice(0, PAGE_SIZE);
-  }, [baseRows, seed, query]);
+    const q = query.trim().toLowerCase();
+    if (!q) return allRows.slice(0, 10);
+    return allRows
+      .filter((item) => [item.title, item.category, item.relation, item.reason, item.intentKey].join(" ").toLowerCase().includes(q))
+      .slice(0, 10);
+  }, [allRows, query]);
 
-  const refresh = () => setSeed(Date.now() + Math.floor(Math.random() * 999999));
+  const refresh = () => setRefreshKey(Date.now() + Math.floor(Math.random() * 999999));
   const publish = (title: string) => publishCmsTitle(title, "data-center", "ALL");
   const duplicate = (title: string) => duplicateCmsTitle(title, "data-center");
 
   return (
-    <Shell title="데이터센터" desc="CMS를 기준으로 추천·발행완료·중복을 통합 관리합니다.">
+    <Shell title="데이터센터" desc="CMS 기준으로 중복 의도를 제거하고 승인 유입 수익 점수가 높은 10개만 추천합니다.">
       <section className="grid gap-3 md:grid-cols-4">
         <Link href="/planner" className="rounded-2xl bg-white p-4"><p className="font-black">전체 발행</p><p className="mt-1 text-2xl font-black text-[#2F6B4F]">{stats.total}</p></Link>
         <Link href="/naver-board" className="rounded-2xl bg-white p-4"><p className="font-black">네이버</p><p className="mt-1 text-2xl font-black text-[#2F6B4F]">{stats.naver}</p></Link>
@@ -74,8 +51,8 @@ export default function OperationHome() {
       <section className="mt-4 rounded-2xl border border-[#E4D5BE] bg-white p-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-xl font-black">오늘의 Revenue 추천주제 10개</h2>
-            <p className="mt-1 text-xs font-bold text-[#6F6255]">전체 후보 {baseRows.length}개 · 현재 표시 {rows.length}개</p>
+            <h2 className="text-xl font-black">오늘의 Revenue 추천주제 TOP10</h2>
+            <p className="mt-1 text-xs font-bold text-[#6F6255]">제목 중복 검색의도 중복 제거, CMS 발행 중복 자동 제외</p>
           </div>
           <button onClick={refresh} className="rounded-xl bg-[#DFF1E7] px-4 py-2 text-xs font-black text-[#1F1A16]">새 추천받기</button>
         </div>
@@ -87,13 +64,16 @@ export default function OperationHome() {
 
         <div className="mt-3 divide-y divide-[#EEE4D6]">
           {rows.map((item, index) => (
-            <div key={`${seed}-${item.title}`} className="flex flex-wrap items-center justify-between gap-2 py-2">
+            <div key={`${item.intentKey}-${item.title}`} className="flex flex-wrap items-center justify-between gap-2 py-3">
               <div className="flex min-w-0 flex-1 gap-3">
                 <div className="w-7 shrink-0 text-xl font-black text-[#2F6B4F]">{String(index + 1).padStart(2, "0")}</div>
                 <div className="min-w-0 flex-1">
                   <p className="font-black">{item.title}</p>
-                  <p className="mt-1 text-xs text-[#6F6255]">SEO {item.seoGrade} · {item.relation}</p>
+                  <p className="mt-1 text-xs text-[#6F6255]">
+                    SEO {item.seoGrade} · 총점 {item.totalScore} · 유입 {item.trafficScore} · 승인 {item.approvalScore} · 쿠팡 {item.coupangScore}
+                  </p>
                   <p className="mt-1 text-xs text-[#2F6B4F]">{item.reason}</p>
+                  {item.productHints.length ? <p className="mt-1 text-xs text-[#8A7865]">추천상품: {item.productHints.join(", ")}</p> : null}
                 </div>
               </div>
 
@@ -106,7 +86,6 @@ export default function OperationHome() {
               </div>
             </div>
           ))}
-          {rows.length === 0 ? <p className="py-5 text-sm font-bold text-[#6F6255]">표시할 추천 주제가 없습니다.</p> : null}
         </div>
       </section>
     </Shell>
