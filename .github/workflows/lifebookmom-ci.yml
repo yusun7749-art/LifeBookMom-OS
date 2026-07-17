@@ -27,4 +27,4 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py" -v
 
       - name: Run integrated dry-run
-        run: python lifebookmom_automation/pipeline_runner.py lifebookmom_publisher/examples/blogger_request.example.json --dry-run
+        run: python lifebookmom_automation/blogger_pipeline_runner.py lifebookmom_publisher/examples/blogger_publish_request.example.json
