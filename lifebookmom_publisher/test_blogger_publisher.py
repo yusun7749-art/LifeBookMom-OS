@@ -3,9 +3,16 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from blogger_publisher import PublishRequest, resolve_blog_id, write_result_log
+from blogger_publisher import (
+    PublishRequest,
+    parse_schedule,
+    publish_draft,
+    resolve_blog_id,
+    write_result_log,
+)
 
 
 class _Execute:
@@ -29,12 +36,22 @@ class _Blogs:
         return _Execute({"id": blogId})
 
 
+class _Posts:
+    def publish(self, **kwargs):
+        self.publish_kwargs = kwargs
+        return _Execute({"id": kwargs["postId"], "url": "https://example.com/post"})
+
+
 class _Service:
     def __init__(self, items):
         self._blogs = _Blogs(items)
+        self._posts = _Posts()
 
     def blogs(self):
         return self._blogs
+
+    def posts(self):
+        return self._posts
 
 
 class PublishRequestTests(unittest.TestCase):
@@ -66,6 +83,28 @@ class PublishRequestTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "labels must be"):
                 PublishRequest.from_json(path)
+
+
+class ScheduleTests(unittest.TestCase):
+    def test_schedule_is_normalized_to_utc(self):
+        future = datetime.now(timezone.utc) + timedelta(days=2)
+        value = future.astimezone(timezone(timedelta(hours=9))).isoformat()
+        normalized = parse_schedule(value)
+        self.assertTrue(normalized.endswith("Z"))
+
+    def test_schedule_requires_timezone(self):
+        with self.assertRaisesRegex(ValueError, "timezone"):
+            parse_schedule("2099-01-01T09:00:00")
+
+    def test_past_schedule_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "future"):
+            parse_schedule("2020-01-01T09:00:00+09:00")
+
+    def test_publish_date_is_sent_to_blogger(self):
+        service = _Service([])
+        result = publish_draft(service, "blog", "post", "2099-01-01T00:00:00Z")
+        self.assertEqual(result["url"], "https://example.com/post")
+        self.assertEqual(service._posts.publish_kwargs["publishDate"], "2099-01-01T00:00:00Z")
 
 
 class BlogResolutionTests(unittest.TestCase):
