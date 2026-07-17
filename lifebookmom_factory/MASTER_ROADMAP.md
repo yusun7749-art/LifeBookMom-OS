@@ -39,10 +39,10 @@
 ### 실제 테스트
 - [x] Google OAuth 최초 승인
 - [x] Blogger 계정 블로그 목록 자동 조회
+- [x] Blogger 임시 초안 생성·조회·수정·삭제 실제 실행
 - [ ] Publisher 단위 테스트 실제 실행
 - [ ] QA Gate 단위 테스트 실제 실행
 - [ ] 통합 Pipeline dry-run 실제 실행
-- [ ] Blogger 임시 초안 생성·조회·수정·삭제 실제 실행
 - [ ] Blogger 예약 발행 실제 실행
 - [ ] 네이버 실제 수정 테스트
 - [ ] 이미지 업로드 자동화 테스트
@@ -51,24 +51,23 @@
 
 ## 현재 판정
 
-- Google Blogger: OAuth 및 블로그 조회 성공 / 공식 API 자동화 연결 완료
-- Blogger 쓰기 검증: 안전한 임시 초안 Lifecycle 실행기 구현 / 로컬 실제 실행 대기
+- Google Blogger: OAuth·블로그 조회·초안 쓰기·조회·수정·삭제 실제 검증 PASS
+- Blogger 쓰기 검증: `DRAFT_LIFECYCLE_PASS` 확인 / 임시 초안 자동 삭제 확인
 - 예약 발행: 코드·안전장치 구현 / 로컬 실제 예약 발행 대기
 - 네이버 블로그: 공개 글쓰기 API 미확인 / 승인형 브라우저 자동화 테스트 필요
 - 기본 발행 정책: QA 통과 후 초안 생성
-- 무인 발행: 실제 쓰기·삭제·예약 발행 검증 완료 전 금지
+- 무인 발행: 예약 발행·QA·통합 dry-run 실제 검증 완료 전 금지
 
 ## 다음 작업 순서
 
-1. `LIFEBOOKMOM-BLOGGER-SMOKE-TEST.bat`로 임시 초안 생성·조회·수정·삭제 실제 검증
-2. Publisher·QA 단위 테스트 및 통합 dry-run 실제 실행
-3. 승인용 첫 콘텐츠 요청 JSON 생성 및 QA 검증
-4. 첫 콘텐츠 Blogger 초안 생성
-5. 이미지 저장소 및 Asset Publisher 방식 확정
-6. 이미지 포함 요청 QA 규칙 연결
-7. Blogger 예약 발행 실제 검증
-8. 통합 발행 버튼 연결
-9. 네이버 제목·본문·이미지·임시저장 테스트
+1. Publisher·QA 단위 테스트 및 통합 dry-run 실제 실행
+2. 승인용 첫 콘텐츠 요청 JSON 생성 및 QA 검증
+3. 첫 콘텐츠 Blogger 초안 생성
+4. 이미지 저장소 및 Asset Publisher 방식 확정
+5. 이미지 포함 요청 QA 규칙 연결
+6. Blogger 예약 발행 실제 검증
+7. 통합 발행 버튼 연결
+8. 네이버 제목·본문·이미지·임시저장 테스트
 
 ## 고정 운영 규칙
 1. 기존 `LifeBookMom-OS`만 사용한다.
