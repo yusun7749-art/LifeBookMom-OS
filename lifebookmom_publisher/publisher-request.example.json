@@ -1,0 +1,12 @@
+{
+  "content_id": "LBM-EXAMPLE-001",
+  "channel": "blogger",
+  "title": "생활백서맘 Blogger API 테스트 초안",
+  "html": "<p>실제 계정 테스트 전 입력 규격 검증용 초안입니다.</p>",
+  "plain_text": "실제 계정 테스트 전 입력 규격 검증용 초안입니다.",
+  "labels": ["생활백서맘", "자동화테스트"],
+  "assets": [],
+  "publish_mode": "draft",
+  "publish_at": null,
+  "qa_report_id": "QA-PENDING"
+}
