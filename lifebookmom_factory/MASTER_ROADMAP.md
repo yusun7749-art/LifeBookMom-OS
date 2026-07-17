@@ -19,11 +19,16 @@
 - [x] Blogger 초안 생성 모듈 기반 구현
 - [x] OAuth 환경설정 예제 생성
 - [x] Publisher 요청 예제 생성
+- [x] Blogger 계정의 단일 블로그 자동 탐색
+- [x] Blogger 다중 블로그 오발행 차단
+- [x] 발행 결과 URL·postId JSONL 기록
+- [x] Publisher 입력·블로그 선택·로그 단위 테스트 작성
 - [ ] Naver 승인형 브라우저 자동화 구현
 - [ ] Asset Publisher 구현
 - [ ] QA Gate 구현
 
 ### 실제 테스트
+- [ ] Publisher 단위 테스트 실제 실행
 - [ ] 네이버 실제 수정 테스트
 - [ ] Google Blogger 테스트 글 생성·수정
 - [ ] 이미지 업로드 자동화 테스트
@@ -32,19 +37,19 @@
 
 ## 현재 판정
 
-- Google Blogger: 공식 API 자동화 가능 / 실제 OAuth 계정 테스트 필요
+- Google Blogger: 공식 API 자동화 가능 / Publisher 안전장치 구현 / 실제 OAuth 계정 테스트 필요
 - 네이버 블로그: 공개 글쓰기 API 미확인 / 승인형 브라우저 자동화 테스트 필요
 - 기본 발행 정책: 초안 또는 발행 직전 사용자 승인
 - 무인 발행: 실제 QA와 플랫폼 테스트 완료 전 금지
 
 ## 다음 작업 순서
 
-1. Blogger Publisher 로컬 dry-run 및 문법 테스트
-2. Google OAuth Client와 blogId 연결
-3. Blogger 테스트 초안 생성·조회·수정·삭제
-4. 이미지 저장소 및 Asset Publisher 방식 확정
-5. QA Gate 구현
-6. 네이버 글쓰기 브라우저 구조 확인
+1. Publisher 단위 테스트 및 dry-run 실제 실행
+2. Google OAuth 최초 승인
+3. Blogger 계정 블로그 목록 자동 조회
+4. Blogger 테스트 초안 생성·조회·수정·삭제
+5. 이미지 저장소 및 Asset Publisher 방식 확정
+6. QA Gate 구현
 7. 네이버 제목·본문·이미지·임시저장 테스트
 8. 통합 Publisher 실행기 연결
 
