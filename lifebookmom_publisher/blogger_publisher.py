@@ -1,7 +1,7 @@
 """LifeBookMom Blogger publisher.
 
-The publisher creates drafts by default and publishes only with ``--publish``.
-OAuth credentials and tokens stay on the local machine and are never committed.
+Creates drafts by default. Immediate or scheduled publishing requires an explicit
+command-line option. OAuth credentials and tokens remain on the local machine.
 """
 
 from __future__ import annotations
@@ -47,6 +47,22 @@ class PublishRequest:
         if not html:
             raise ValueError("html is required")
         return cls(title=title, html=html, labels=labels)
+
+
+def parse_schedule(value: str) -> str:
+    """Validate a future RFC3339 timestamp and return normalized UTC text."""
+    raw = value.strip()
+    if not raw:
+        raise ValueError("schedule datetime is required")
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("schedule must be RFC3339, for example 2026-07-20T09:00:00+09:00") from exc
+    if parsed.tzinfo is None:
+        raise ValueError("schedule must include a timezone offset")
+    if parsed.astimezone(timezone.utc) <= datetime.now(timezone.utc):
+        raise ValueError("schedule must be in the future")
+    return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def _load_google_dependencies() -> tuple[Any, Any, Any, Any]:
@@ -122,8 +138,13 @@ def create_draft(service: Any, blog_id: str, request: PublishRequest) -> dict[st
     return service.posts().insert(blogId=blog_id, body=body, isDraft=True).execute()
 
 
-def publish_draft(service: Any, blog_id: str, post_id: str) -> dict[str, Any]:
-    return service.posts().publish(blogId=blog_id, postId=post_id).execute()
+def publish_draft(
+    service: Any, blog_id: str, post_id: str, publish_date: str | None = None
+) -> dict[str, Any]:
+    kwargs: dict[str, Any] = {"blogId": blog_id, "postId": post_id}
+    if publish_date:
+        kwargs["publishDate"] = publish_date
+    return service.posts().publish(**kwargs).execute()
 
 
 def write_result_log(result: dict[str, Any], log_path: Path) -> None:
@@ -136,7 +157,9 @@ def write_result_log(result: dict[str, Any], log_path: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description="LifeBookMom Blogger publisher")
     parser.add_argument("request", nargs="?", type=Path, help="Publisher request JSON")
-    parser.add_argument("--publish", action="store_true", help="Publish after draft creation")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--publish", action="store_true", help="Publish after draft creation")
+    mode.add_argument("--schedule", metavar="RFC3339", help="Schedule after draft creation")
     parser.add_argument("--dry-run", action="store_true", help="Validate input without API access")
     parser.add_argument("--list-blogs", action="store_true", help="List blogs available to this Google account")
     parser.add_argument(
@@ -157,6 +180,7 @@ def main() -> int:
             raise ValueError("request JSON path is required")
 
         request = PublishRequest.from_json(args.request)
+        scheduled_at = parse_schedule(args.schedule) if args.schedule else None
         if args.dry_run:
             print(
                 json.dumps(
@@ -165,6 +189,7 @@ def main() -> int:
                         "title": request.title,
                         "labels": request.labels,
                         "html_length": len(request.html),
+                        "scheduled_at": scheduled_at,
                     },
                     ensure_ascii=False,
                 )
@@ -183,9 +208,15 @@ def main() -> int:
             "title": draft.get("title"),
         }
 
-        if args.publish:
-            published = publish_draft(service, blog_id, str(draft["id"]))
-            result.update({"status": "PUBLISHED", "url": published.get("url")})
+        if args.publish or scheduled_at:
+            published = publish_draft(service, blog_id, str(draft["id"]), scheduled_at)
+            result.update(
+                {
+                    "status": "SCHEDULED" if scheduled_at else "PUBLISHED",
+                    "url": published.get("url"),
+                    "scheduled_at": scheduled_at,
+                }
+            )
 
         write_result_log(result, args.result_log)
         print(json.dumps(result, ensure_ascii=False))

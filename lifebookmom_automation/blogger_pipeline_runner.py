@@ -1,6 +1,7 @@
 """LifeBookMom QA -> Blogger publisher pipeline runner.
 
-Default mode is safe dry-run. Use --create-draft or --publish for API writes.
+Default mode is safe dry-run. Use --create-draft, --publish or --schedule for
+Blogger API writes after the QA gate passes.
 """
 
 from __future__ import annotations
@@ -42,7 +43,8 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--create-draft", action="store_true", help="Create a Blogger draft after QA")
     mode.add_argument("--publish", action="store_true", help="Create and immediately publish after QA")
-    parser.add_argument("--min-text-length", type=int, default=800)
+    mode.add_argument("--schedule", metavar="RFC3339", help="Create and schedule after QA")
+    parser.add_argument("--min-text-length", type=int, default=5000)
     parser.add_argument("--pipeline-log", type=Path, default=DEFAULT_PIPELINE_LOG)
     args = parser.parse_args()
 
@@ -56,10 +58,20 @@ def main() -> int:
     ]
     qa_code, qa_result = run_json_command(qa_command)
 
+    selected_mode = (
+        "schedule"
+        if args.schedule
+        else "publish"
+        if args.publish
+        else "create_draft"
+        if args.create_draft
+        else "dry_run"
+    )
     pipeline_result: dict[str, Any] = {
         "request": str(request_path),
         "qa": qa_result,
-        "mode": "publish" if args.publish else "create_draft" if args.create_draft else "dry_run",
+        "mode": selected_mode,
+        "scheduled_at": args.schedule,
     }
 
     if qa_code != 0:
@@ -69,7 +81,9 @@ def main() -> int:
         return 2
 
     publisher_command = [sys.executable, str(PUBLISHER_SCRIPT), str(request_path)]
-    if args.publish:
+    if args.schedule:
+        publisher_command.extend(["--schedule", args.schedule])
+    elif args.publish:
         publisher_command.append("--publish")
     elif not args.create_draft:
         publisher_command.append("--dry-run")
