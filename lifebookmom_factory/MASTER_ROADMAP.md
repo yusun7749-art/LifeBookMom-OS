@@ -12,7 +12,7 @@
 - [x] Publisher 설계
 - [x] 자동화 구조 설계
 - [x] CMS 상태 모델 설계
-- [ ] QA 규칙 설계
+- [x] QA 규칙 1차 설계
 
 ### 구현 기반
 - [x] Blogger Publisher 입력 계약 생성
@@ -23,35 +23,42 @@
 - [x] Blogger 다중 블로그 오발행 차단
 - [x] 발행 결과 URL·postId JSONL 기록
 - [x] Publisher 입력·블로그 선택·로그 단위 테스트 작성
+- [x] QA Gate 구현
+- [x] QA → Blogger 통합 Pipeline Runner 구현
+- [x] 안전 기본값 dry-run 및 발행 모드 분리
+- [x] 파이프라인 실행 결과 JSONL 기록
+- [x] Windows 원클릭 dry-run 실행 파일 추가
+- [x] QA Gate 단위 테스트 작성
 - [ ] Naver 승인형 브라우저 자동화 구현
 - [ ] Asset Publisher 구현
-- [ ] QA Gate 구현
 
 ### 실제 테스트
 - [ ] Publisher 단위 테스트 실제 실행
+- [ ] QA Gate 단위 테스트 실제 실행
+- [ ] 통합 Pipeline dry-run 실제 실행
 - [ ] 네이버 실제 수정 테스트
 - [ ] Google Blogger 테스트 글 생성·수정
 - [ ] 이미지 업로드 자동화 테스트
-- [ ] 발행 전 QA 차단 테스트
+- [ ] 발행 전 QA 차단 실제 테스트
 - [ ] 발행 자동화 테스트
 
 ## 현재 판정
 
-- Google Blogger: 공식 API 자동화 가능 / Publisher 안전장치 구현 / 실제 OAuth 계정 테스트 필요
+- Google Blogger: 공식 API 자동화 가능 / Publisher 및 QA Pipeline 기반 구현 / 실제 OAuth 계정 테스트 필요
 - 네이버 블로그: 공개 글쓰기 API 미확인 / 승인형 브라우저 자동화 테스트 필요
-- 기본 발행 정책: 초안 또는 발행 직전 사용자 승인
+- 기본 발행 정책: QA 통과 후 dry-run 또는 초안 생성
 - 무인 발행: 실제 QA와 플랫폼 테스트 완료 전 금지
 
 ## 다음 작업 순서
 
-1. Publisher 단위 테스트 및 dry-run 실제 실행
+1. Publisher·QA 단위 테스트 및 통합 dry-run 실제 실행
 2. Google OAuth 최초 승인
 3. Blogger 계정 블로그 목록 자동 조회
 4. Blogger 테스트 초안 생성·조회·수정·삭제
 5. 이미지 저장소 및 Asset Publisher 방식 확정
-6. QA Gate 구현
+6. 이미지 포함 요청 QA 규칙 연결
 7. 네이버 제목·본문·이미지·임시저장 테스트
-8. 통합 Publisher 실행기 연결
+8. 통합 발행 버튼 연결
 
 ## 고정 운영 규칙
 1. 기존 `LifeBookMom-OS`만 사용한다.
