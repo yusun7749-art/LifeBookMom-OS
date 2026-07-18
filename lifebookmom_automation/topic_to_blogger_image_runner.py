@@ -1,0 +1,95 @@
+"""Topic -> Brand QA -> Content QA -> image asset gate -> Blogger draft.
+
+The runner is deliberately fail-closed. On the first run it creates the three
+required image specifications and returns IMAGE_ASSETS_REQUIRED. After actual
+files are placed at the generated paths, rerunning continues to Blogger.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+for folder in (ROOT / "lifebookmom_engine", ROOT / "lifebookmom_automation"):
+    if str(folder) not in sys.path:
+        sys.path.insert(0, str(folder))
+
+from image_pipeline_engine import build_image_plan, save_image_plan, validate_image_plan
+from topic_to_blogger_draft_runner import prepare, send_to_blogger
+
+IMAGE_PLAN_DIR = ROOT / "lifebookmom_cms" / "image_plans"
+IMAGE_ASSET_DIR = ROOT / "lifebookmom_assets" / "generated"
+
+
+def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: int = 5000) -> dict[str, Any]:
+    prepared = prepare(topic, category, min_text_length=min_text_length)
+    if prepared["status"] != "READY_FOR_BLOGGER_DRAFT":
+        return prepared
+
+    request_id = prepared["request_id"]
+    plan_path = IMAGE_PLAN_DIR / f"{request_id}.json"
+    if plan_path.is_file():
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    else:
+        plan = build_image_plan(request_id, topic, IMAGE_ASSET_DIR)
+        save_image_plan(plan, plan_path)
+
+    image_qa = validate_image_plan(plan)
+    image_qa_payload = image_qa.to_dict()
+    prepared["draft"]["image_plan_path"] = str(plan_path)
+    prepared["draft"]["image_qa"] = image_qa_payload
+
+    if not image_qa.passed:
+        return {
+            "status": "IMAGE_ASSETS_REQUIRED",
+            "request_id": request_id,
+            "draft_path": prepared["draft_path"],
+            "image_plan_path": str(plan_path),
+            "image_qa": image_qa_payload,
+            "required_assets": plan["assets"],
+            "next_stage": "CREATE_REQUIRED_IMAGES",
+        }
+
+    if dry_run:
+        return {
+            "status": "TOPIC_TO_BLOGGER_WITH_IMAGES_DRY_RUN_PASS",
+            "request_id": request_id,
+            "draft_path": prepared["draft_path"],
+            "image_plan_path": str(plan_path),
+            "image_qa": image_qa_payload,
+            "next_stage": "BLOGGER_DRAFT",
+        }
+
+    blogger = send_to_blogger(Path(prepared["draft_path"]))
+    return {
+        **blogger,
+        "request_id": request_id,
+        "draft_path": prepared["draft_path"],
+        "image_plan_path": str(plan_path),
+        "image_qa": image_qa_payload,
+        "next_stage": "EDITOR_REVIEW",
+    }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="생활백서맘 주제 → 글 QA → 이미지 3종 QA → Blogger")
+    parser.add_argument("topic")
+    parser.add_argument("--category", default="미분류")
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--min-text-length", type=int, default=5000)
+    args = parser.parse_args()
+    try:
+        result = run(args.topic, args.category, dry_run=args.dry_run, min_text_length=args.min_text_length)
+        print(json.dumps(result, ensure_ascii=False))
+        blocked = {"BLOCKED_BY_QA", "BLOCKED_BY_BRAND_QA", "IMAGE_ASSETS_REQUIRED"}
+        return 0 if result["status"] not in blocked else 2
+    except Exception as exc:
+        print(json.dumps({"status": "TOPIC_TO_BLOGGER_IMAGE_RUN_FAIL", "error": str(exc)}, ensure_ascii=False), file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
