@@ -20,4 +20,9 @@ def build_log_event(task, status, result=None, next_step=None):
 
 def record_execution(log_writer, event):
     """Send completed execution event to MASTER LOG writer."""
-    return log_writer.append(event)
+    return log_writer.append(
+        sprint=event.get("task", ""),
+        action=event.get("status", ""),
+        result=event.get("result", ""),
+        next_step=event.get("next_step", ""),
+    )
