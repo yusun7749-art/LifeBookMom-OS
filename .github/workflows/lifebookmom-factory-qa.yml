@@ -1,0 +1,40 @@
+name: LifeBookMom Factory QA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+
+      - name: Compile Python sources
+        run: python -m compileall lifebookmom_engine lifebookmom_automation lifebookmom_qa lifebookmom_publisher
+
+      - name: Run Brand DNA tests
+        run: python -m pytest tests/test_brand_dna_engine.py -q
+
+      - name: Run regression tests
+        run: python -m pytest tests -q
