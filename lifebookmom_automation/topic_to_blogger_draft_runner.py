@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-for folder in (ROOT / "lifebookmom_engine", ROOT / "lifebookmom_qa", ROOT / "lifebookmom_publisher"):
+for folder in (ROOT / "lifebookmom_engine", ROOT / "lifebookmom_qa", ROOT / "lifebookmom_publisher", ROOT / "lifebookmom_factory"):
     if str(folder) not in sys.path:
         sys.path.insert(0, str(folder))
 
@@ -19,6 +19,7 @@ from blogger_publisher import PublishRequest, build_service, create_draft, resol
 from brand_dna_engine import apply_brand_dna, validate_brand_dna
 from content_qa_gate import validate_payload
 from content_request_engine import build_request, save_request
+from master_log_writer import write_master_log
 
 QA_DIR = ROOT / "lifebookmom_cms" / "qa_reports"
 BRAND_QA_DIR = ROOT / "lifebookmom_cms" / "brand_qa_reports"
@@ -37,59 +38,42 @@ def _append_log(payload: dict[str, Any]) -> None:
     with PIPELINE_LOG.open("a", encoding="utf-8") as file:
         file.write(json.dumps(record, ensure_ascii=False) + "\n")
 
+    write_master_log(
+        task="Topic to Blogger Draft Pipeline",
+        status=str(payload.get("status", "UNKNOWN")),
+        result=f"request_id={payload.get('request_id', '')}",
+        next_step=str(payload.get("next_stage", "")),
+    )
+
 
 def prepare(topic: str, category: str, channel: str = "blogger", min_text_length: int = 5000) -> dict[str, Any]:
     request = build_request(topic, category=category, channel=channel)
     request_path = save_request(request)
-
     generic_draft = build_draft(request.__dict__)
     draft = apply_brand_dna(generic_draft, topic)
     brand_qa = validate_brand_dna(draft)
     brand_qa_payload = brand_qa.to_dict()
     brand_qa_path = _write_json(BRAND_QA_DIR / f"{request.request_id}.json", brand_qa_payload)
-
     draft["brand_qa_report_path"] = str(brand_qa_path)
     draft["brand_qa_score"] = brand_qa.score
     draft["brand_status"] = "BRAND_QA_PASSED" if brand_qa.passed else "BRAND_QA_FAILED"
-
     if not brand_qa.passed:
         draft["status"] = "BRAND_QA_FAILED"
         draft["next_stage"] = "BRAND_REWORK"
         draft_path = save_draft(draft)
-        result = {
-            "status": "BLOCKED_BY_BRAND_QA",
-            "request_id": request.request_id,
-            "request_path": str(request_path),
-            "draft_path": str(draft_path),
-            "brand_qa_path": str(brand_qa_path),
-            "brand_qa": brand_qa_payload,
-            "draft": draft,
-        }
+        result = {"status": "BLOCKED_BY_BRAND_QA", "request_id": request.request_id, "request_path": str(request_path), "draft_path": str(draft_path), "brand_qa_path": str(brand_qa_path), "brand_qa": brand_qa_payload, "draft": draft}
         _append_log({key: value for key, value in result.items() if key != "draft"})
         return result
-
     draft_path = save_draft(draft)
     qa = validate_payload(draft, min_text_length=min_text_length)
     qa_payload = qa.to_dict()
     qa_path = _write_json(QA_DIR / f"{request.request_id}.json", qa_payload)
-
     draft["qa_report_id"] = request.request_id
     draft["qa_report_path"] = str(qa_path)
     draft["status"] = "QA_PASSED" if qa.passed else "QA_FAILED"
     draft["next_stage"] = "BLOGGER_DRAFT" if qa.passed else "QA_REWORK"
     save_draft(draft)
-
-    result = {
-        "status": "READY_FOR_BLOGGER_DRAFT" if qa.passed else "BLOCKED_BY_QA",
-        "request_id": request.request_id,
-        "request_path": str(request_path),
-        "draft_path": str(draft_path),
-        "brand_qa_path": str(brand_qa_path),
-        "brand_qa": brand_qa_payload,
-        "qa_path": str(qa_path),
-        "qa": qa_payload,
-        "draft": draft,
-    }
+    result = {"status": "READY_FOR_BLOGGER_DRAFT" if qa.passed else "BLOCKED_BY_QA", "request_id": request.request_id, "request_path": str(request_path), "draft_path": str(draft_path), "brand_qa_path": str(brand_qa_path), "brand_qa": brand_qa_payload, "qa_path": str(qa_path), "qa": qa_payload, "draft": draft}
     _append_log({key: value for key, value in result.items() if key != "draft"})
     return result
 
@@ -99,13 +83,7 @@ def send_to_blogger(draft_path: Path) -> dict[str, Any]:
     service = build_service()
     blog_id = resolve_blog_id(service, os.getenv("LIFEBOOKMOM_BLOGGER_BLOG_ID", "").strip())
     created = create_draft(service, blog_id, request)
-    return {
-        "status": "BLOGGER_DRAFT_CREATED",
-        "blog_id": blog_id,
-        "post_id": str(created.get("id", "")),
-        "url": created.get("url"),
-        "title": created.get("title", request.title),
-    }
+    return {"status": "BLOGGER_DRAFT_CREATED", "blog_id": blog_id, "post_id": str(created.get("id", "")), "url": created.get("url"), "title": created.get("title", request.title)}
 
 
 def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: int = 5000) -> dict[str, Any]:
@@ -113,41 +91,14 @@ def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: in
     if prepared["status"] != "READY_FOR_BLOGGER_DRAFT":
         return prepared
     if dry_run:
-        result = {
-            "status": "TOPIC_TO_BLOGGER_DRAFT_DRY_RUN_PASS",
-            "request_id": prepared["request_id"],
-            "draft_path": prepared["draft_path"],
-            "brand_qa_path": prepared["brand_qa_path"],
-            "brand_qa_score": prepared["brand_qa"]["score"],
-            "qa_path": prepared["qa_path"],
-            "text_length": prepared["qa"]["text_length"],
-            "next_stage": "BLOGGER_DRAFT",
-        }
+        result = {"status": "TOPIC_TO_BLOGGER_DRAFT_DRY_RUN_PASS", "request_id": prepared["request_id"], "draft_path": prepared["draft_path"], "brand_qa_path": prepared["brand_qa_path"], "brand_qa_score": prepared["brand_qa"]["score"], "qa_path": prepared["qa_path"], "text_length": prepared["qa"]["text_length"], "next_stage": "BLOGGER_DRAFT"}
         _append_log(result)
         return result
-
     blogger = send_to_blogger(Path(prepared["draft_path"]))
     saved = prepared["draft"]
-    saved.update(
-        {
-            "status": "BLOGGER_DRAFT_CREATED",
-            "next_stage": "EDITOR_REVIEW",
-            "blogger_blog_id": blogger["blog_id"],
-            "blogger_post_id": blogger["post_id"],
-            "blogger_url": blogger["url"],
-        }
-    )
+    saved.update({"status": "BLOGGER_DRAFT_CREATED", "next_stage": "EDITOR_REVIEW", "blogger_blog_id": blogger["blog_id"], "blogger_post_id": blogger["post_id"], "blogger_url": blogger["url"]})
     save_draft(saved)
-    result = {
-        **blogger,
-        "request_id": prepared["request_id"],
-        "draft_path": prepared["draft_path"],
-        "brand_qa_path": prepared["brand_qa_path"],
-        "brand_qa_score": prepared["brand_qa"]["score"],
-        "qa_path": prepared["qa_path"],
-        "text_length": prepared["qa"]["text_length"],
-        "next_stage": "EDITOR_REVIEW",
-    }
+    result = {**blogger, "request_id": prepared["request_id"], "draft_path": prepared["draft_path"], "brand_qa_path": prepared["brand_qa_path"], "brand_qa_score": prepared["brand_qa"]["score"], "qa_path": prepared["qa_path"], "text_length": prepared["qa"]["text_length"], "next_stage": "EDITOR_REVIEW"}
     _append_log(result)
     return result
 
