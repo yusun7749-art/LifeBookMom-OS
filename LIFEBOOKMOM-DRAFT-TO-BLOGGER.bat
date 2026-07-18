@@ -4,9 +4,9 @@ setlocal
 cd /d "%~dp0"
 
 if "%~1"=="" (
-  python lifebookmom_automation\draft_to_blogger_runner.py --latest
+  python -m lifebookmom_automation.draft_to_blogger_runner --latest
 ) else (
-  python lifebookmom_automation\draft_to_blogger_runner.py "%~1"
+  python -m lifebookmom_automation.draft_to_blogger_runner "%~1"
 )
 set EXIT_CODE=%ERRORLEVEL%
 

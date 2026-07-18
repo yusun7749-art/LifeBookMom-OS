@@ -12,6 +12,9 @@ from lifebookmom_automation.draft_to_blogger_runner import (
 )
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 class _Execute:
     def __init__(self, payload):
         self.payload = payload
@@ -90,6 +93,11 @@ class DraftToBloggerRunnerTests(unittest.TestCase):
             duplicate.write_text(json.dumps(duplicate_payload), encoding="utf-8")
 
             self.assertEqual(find_latest_draft(root), eligible)
+
+    def test_windows_launcher_uses_module_execution(self):
+        launcher = (ROOT / "LIFEBOOKMOM-DRAFT-TO-BLOGGER.bat").read_text(encoding="utf-8")
+        self.assertIn("python -m lifebookmom_automation.draft_to_blogger_runner", launcher)
+        self.assertNotIn("python lifebookmom_automation\\draft_to_blogger_runner.py", launcher)
 
 
 if __name__ == "__main__":
