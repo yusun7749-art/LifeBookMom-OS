@@ -36,5 +36,8 @@ jobs:
       - name: Run Brand DNA tests
         run: python -m pytest tests/test_brand_dna_engine.py -q
 
+      - name: Run image pipeline tests
+        run: python -m pytest tests/test_image_pipeline_engine.py -q
+
       - name: Run regression tests
         run: python -m pytest tests -q
