@@ -37,6 +37,7 @@
 - 한 문장 주제를 CMS 콘텐츠 요청 JSON으로 변환하는 Content Request Engine
 - Windows 원클릭 콘텐츠 요청 실행 파일
 - CMS 요청 데이터를 QA 준비 Draft 구조로 변환하는 Content Generation Engine
+- CMS Draft 데이터를 Blogger Publisher 요청 형식으로 변환하는 Converter
 
 ### VERIFIED
 - Google OAuth 최초 승인 성공
@@ -53,8 +54,7 @@
 - Windows 명령 프롬프트에서 BAT 한글 출력이 깨짐. 실행 결과 JSON에는 영향 없음.
 
 ### NEXT
-1. CMS 요청 → Blogger Publisher 요청 JSON 변환 구현
-2. 생성 콘텐츠 QA Gate 연결
-3. 첫 승인용 콘텐츠 Blogger 초안 생성
-4. 이미지 저장소와 Asset Publisher 방식 확정
-5. 예약 발행 실제 검증
+1. 생성 콘텐츠 QA Gate 연결
+2. 첫 승인용 콘텐츠 Blogger 초안 생성
+3. 이미지 저장소와 Asset Publisher 방식 확정
+4. 예약 발행 실제 검증
