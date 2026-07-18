@@ -1,8 +1,9 @@
-"""Topic -> Brand QA -> Content QA -> image asset gate -> Blogger draft."""
+"""Topic -> Brand QA -> Content QA -> image publish/QA -> Blogger draft."""
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,7 @@ for folder in (ROOT / "lifebookmom_engine", ROOT / "lifebookmom_automation"):
     if str(folder) not in sys.path:
         sys.path.insert(0, str(folder))
 
+from github_image_uploader import publish_plan_assets
 from image_pipeline_engine import (
     build_image_plan,
     inject_images_into_html,
@@ -31,6 +33,25 @@ def _write_json(path: Path, payload: dict[str, Any]) -> Path:
     return path
 
 
+def _all_local_assets_exist(plan: dict[str, Any]) -> bool:
+    assets = plan.get("assets", [])
+    return bool(assets) and all(
+        Path(str(asset.get("path", ""))).is_file()
+        and Path(str(asset.get("path", ""))).stat().st_size > 0
+        for asset in assets
+        if isinstance(asset, dict)
+    )
+
+
+def _public_urls_complete(plan: dict[str, Any]) -> bool:
+    assets = plan.get("assets", [])
+    return bool(assets) and all(
+        str(asset.get("public_url", "")).strip().startswith("https://")
+        for asset in assets
+        if isinstance(asset, dict)
+    )
+
+
 def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: int = 5000) -> dict[str, Any]:
     prepared = prepare(topic, category, min_text_length=min_text_length)
     if prepared["status"] != "READY_FOR_BLOGGER_DRAFT":
@@ -42,6 +63,11 @@ def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: in
         plan = json.loads(plan_path.read_text(encoding="utf-8"))
     else:
         plan = build_image_plan(request_id, topic, IMAGE_ASSET_DIR)
+        save_image_plan(plan, plan_path)
+
+    auto_publish = os.getenv("LIFEBOOKMOM_AUTO_PUBLISH_IMAGES", "1").strip().lower() not in {"0", "false", "no"}
+    if auto_publish and _all_local_assets_exist(plan) and not _public_urls_complete(plan):
+        plan = publish_plan_assets(plan)
         save_image_plan(plan, plan_path)
 
     image_qa = validate_image_plan(plan, require_public_urls=True)
@@ -76,6 +102,9 @@ def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: in
         for item in plan["assets"]
         if item.get("type") == "thumbnail" and item.get("representative") is True
     )
+    draft["published_image_urls"] = {
+        str(item.get("type")): str(item.get("public_url")) for item in plan["assets"]
+    }
     _write_json(Path(prepared["draft_path"]), draft)
 
     if dry_run:
@@ -114,7 +143,7 @@ def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: in
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="생활백서맘 주제 → 글 QA → 이미지 3종 QA/삽입 → Blogger")
+    parser = argparse.ArgumentParser(description="생활백서맘 주제 → 글 QA → 이미지 공개 업로드/삽입 → Blogger")
     parser.add_argument("topic")
     parser.add_argument("--category", default="미분류")
     parser.add_argument("--dry-run", action="store_true")
