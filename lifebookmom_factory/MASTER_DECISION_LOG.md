@@ -36,12 +36,16 @@
 - QA Gate와 Blogger Pipeline Runner
 - 한 문장 주제를 CMS 콘텐츠 요청 JSON으로 변환하는 Content Request Engine
 - Windows 원클릭 콘텐츠 요청 실행 파일
+- CMS 요청 데이터를 QA 준비 Draft 구조로 변환하는 Content Generation Engine
 
 ### VERIFIED
 - Google OAuth 최초 승인 성공
 - Blogger 블로그 ID `4027327034067144989` 조회 성공
 - 실제 계정에서 임시 초안 생성 → 조회 → 수정 → 삭제 성공
 - 결과 상태 `DRAFT_LIFECYCLE_PASS` 확인
+- 전체 pytest 실행 결과 `48 passed` 확인
+- Content Request Engine 테스트 통과 확인
+- Content Generation Engine 구조 검증 완료
 
 ### ISSUE
 - 로컬 Git이 detached HEAD 상태여서 `git pull`이 중단됨.
@@ -49,9 +53,8 @@
 - Windows 명령 프롬프트에서 BAT 한글 출력이 깨짐. 실행 결과 JSON에는 영향 없음.
 
 ### NEXT
-1. Content Request Engine CI 단위 테스트 통과 확인
-2. 콘텐츠 생성 단계와 Publisher 요청 JSON 변환 단계 구현
-3. 생성 콘텐츠에 QA Gate 연결
-4. 첫 승인용 콘텐츠를 Blogger 초안으로 생성
-5. 이미지 저장소와 Asset Publisher 방식 확정
-6. 예약 발행 실제 검증
+1. CMS 요청 → Blogger Publisher 요청 JSON 변환 구현
+2. 생성 콘텐츠 QA Gate 연결
+3. 첫 승인용 콘텐츠 Blogger 초안 생성
+4. 이미지 저장소와 Asset Publisher 방식 확정
+5. 예약 발행 실제 검증
