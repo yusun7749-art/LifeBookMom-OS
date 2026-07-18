@@ -1,9 +1,4 @@
-"""Topic -> Brand QA -> Content QA -> image asset gate -> Blogger draft.
-
-The runner is deliberately fail-closed. On the first run it creates the three
-required image specifications and returns IMAGE_ASSETS_REQUIRED. After actual
-files are placed at the generated paths, rerunning continues to Blogger.
-"""
+"""Topic -> Brand QA -> Content QA -> image asset gate -> Blogger draft."""
 from __future__ import annotations
 
 import argparse
@@ -17,11 +12,23 @@ for folder in (ROOT / "lifebookmom_engine", ROOT / "lifebookmom_automation"):
     if str(folder) not in sys.path:
         sys.path.insert(0, str(folder))
 
-from image_pipeline_engine import build_image_plan, save_image_plan, validate_image_plan
+from image_pipeline_engine import (
+    build_image_plan,
+    inject_images_into_html,
+    save_image_plan,
+    validate_image_plan,
+)
 from topic_to_blogger_draft_runner import prepare, send_to_blogger
 
 IMAGE_PLAN_DIR = ROOT / "lifebookmom_cms" / "image_plans"
+IMAGE_QA_DIR = ROOT / "lifebookmom_cms" / "image_qa_reports"
 IMAGE_ASSET_DIR = ROOT / "lifebookmom_assets" / "generated"
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return path
 
 
 def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: int = 5000) -> dict[str, Any]:
@@ -37,21 +44,39 @@ def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: in
         plan = build_image_plan(request_id, topic, IMAGE_ASSET_DIR)
         save_image_plan(plan, plan_path)
 
-    image_qa = validate_image_plan(plan)
+    image_qa = validate_image_plan(plan, require_public_urls=True)
     image_qa_payload = image_qa.to_dict()
-    prepared["draft"]["image_plan_path"] = str(plan_path)
-    prepared["draft"]["image_qa"] = image_qa_payload
+    image_qa_path = _write_json(IMAGE_QA_DIR / f"{request_id}.json", image_qa_payload)
+
+    draft = prepared["draft"]
+    draft["image_plan_path"] = str(plan_path)
+    draft["image_qa_report_path"] = str(image_qa_path)
+    draft["image_qa"] = image_qa_payload
 
     if not image_qa.passed:
+        draft["status"] = "IMAGE_QA_FAILED"
+        draft["next_stage"] = "CREATE_AND_UPLOAD_REQUIRED_IMAGES"
+        _write_json(Path(prepared["draft_path"]), draft)
         return {
             "status": "IMAGE_ASSETS_REQUIRED",
             "request_id": request_id,
             "draft_path": prepared["draft_path"],
             "image_plan_path": str(plan_path),
+            "image_qa_path": str(image_qa_path),
             "image_qa": image_qa_payload,
             "required_assets": plan["assets"],
-            "next_stage": "CREATE_REQUIRED_IMAGES",
+            "next_stage": "CREATE_AND_UPLOAD_REQUIRED_IMAGES",
         }
+
+    draft["html"] = inject_images_into_html(str(draft.get("html", "")), plan)
+    draft["status"] = "IMAGE_QA_PASSED"
+    draft["next_stage"] = "BLOGGER_DRAFT"
+    draft["representative_image_url"] = next(
+        str(item["public_url"])
+        for item in plan["assets"]
+        if item.get("type") == "thumbnail" and item.get("representative") is True
+    )
+    _write_json(Path(prepared["draft_path"]), draft)
 
     if dry_run:
         return {
@@ -59,23 +84,37 @@ def run(topic: str, category: str, *, dry_run: bool = False, min_text_length: in
             "request_id": request_id,
             "draft_path": prepared["draft_path"],
             "image_plan_path": str(plan_path),
+            "image_qa_path": str(image_qa_path),
             "image_qa": image_qa_payload,
+            "representative_image_url": draft["representative_image_url"],
             "next_stage": "BLOGGER_DRAFT",
         }
 
     blogger = send_to_blogger(Path(prepared["draft_path"]))
+    draft.update(
+        {
+            "status": "BLOGGER_DRAFT_CREATED",
+            "next_stage": "BLOGGER_IMAGE_VERIFICATION",
+            "blogger_blog_id": blogger["blog_id"],
+            "blogger_post_id": blogger["post_id"],
+            "blogger_url": blogger["url"],
+        }
+    )
+    _write_json(Path(prepared["draft_path"]), draft)
     return {
         **blogger,
         "request_id": request_id,
         "draft_path": prepared["draft_path"],
         "image_plan_path": str(plan_path),
+        "image_qa_path": str(image_qa_path),
         "image_qa": image_qa_payload,
-        "next_stage": "EDITOR_REVIEW",
+        "representative_image_url": draft["representative_image_url"],
+        "next_stage": "BLOGGER_IMAGE_VERIFICATION",
     }
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="생활백서맘 주제 → 글 QA → 이미지 3종 QA → Blogger")
+    parser = argparse.ArgumentParser(description="생활백서맘 주제 → 글 QA → 이미지 3종 QA/삽입 → Blogger")
     parser.add_argument("topic")
     parser.add_argument("--category", default="미분류")
     parser.add_argument("--dry-run", action="store_true")
