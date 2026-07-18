@@ -91,6 +91,46 @@
 - PR #16 — Windows Python module import fix
 - PR #17 — Sprint018 Blogger private draft verification
 - PR #18 — Sprint019 Safe verified Blogger publish
+- PR #19 — Permanent learning and work logs
+
+---
+
+## 작업 기록
+
+### 2026-07-18 — Sprint020-01 Brand DNA Engine
+
+- 상태: FIX / TEST PENDING
+- 실제 수행:
+  - `brand_dna_engine.py` 신규 구현.
+  - 일반 설명형 도입을 실제 퇴근 후 생활 장면과 아이 대사로 교체.
+  - 1인칭 부모 시점, 부모의 시선 변화, 아이의 마음 해석, 감성 마무리 삽입.
+  - 기존 장문 정보, 체크리스트, FAQ는 유지하도록 변환 구조 구성.
+  - Brand QA를 일반 Content QA보다 먼저 실행하도록 파이프라인 순서 변경.
+  - Brand QA 실패 시 `BLOCKED_BY_BRAND_QA` 및 `BRAND_REWORK`로 Blogger 전송 차단.
+  - 본문에서 캐릭터명 `리니` 사용 여부를 차단 항목으로 추가.
+  - Brand QA 보고서를 `lifebookmom_cms/brand_qa_reports/`에 별도 저장.
+  - 단위 테스트 3개 추가.
+- 검증 방법:
+  - 코드 구조 및 테스트 케이스 저장 완료.
+  - 현재 GitHub 연결에서 실행 가능한 Workflow run이 없어 테스트 실행 결과는 아직 확인하지 못함.
+- 결과:
+  - 실제 코드와 테스트는 저장 완료.
+  - 실행 검증 전이므로 PASS로 기록하지 않음.
+- 재발 방지:
+  - Content QA만 통과한 일반 정보형 글을 Blogger로 보내지 않는다.
+  - Brand DNA 적용과 Brand QA 통과가 먼저 확인되어야 Content QA로 이동한다.
+- 수정 파일:
+  - `lifebookmom_engine/brand_dna_engine.py`
+  - `lifebookmom_automation/topic_to_blogger_draft_runner.py`
+  - `tests/test_brand_dna_engine.py`
+- 커밋:
+  - `7e778b36c766ad5f7950c3cd17c44d0fb9a184a1`
+  - `7c6d896696fea10d9d84161c18c22e5a43c4f0c6`
+  - `39bd36d9a2e19c38bb353724efa8305acdd9ce4e`
+- 다음 작업:
+  - 로컬 또는 CI에서 전체 테스트 실행.
+  - 실제 주제 입력 dry-run으로 Brand QA 100점과 5,000자 Content QA 동시 통과 확인.
+  - 검증 후 Content QA의 교과서형 문체 감점 규칙을 강화.
 
 ---
 
